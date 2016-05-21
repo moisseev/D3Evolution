@@ -50,7 +50,8 @@ function D3Evolution(id, options) {
     var area = d3.svg.area()
         .x(function (d) { return xScale(d.x); })
         .y0(function (d) { return yScale(d.y0); })
-        .y1(function (d) { return yScale(d.y0 + d.y); });
+        .y1(function (d) { return yScale(d.y0 + d.y); })
+        .interpolate(opts.interpolate);
     var stack = d3.layout.stack();
 
     var colorScale = d3.scale.category10();
