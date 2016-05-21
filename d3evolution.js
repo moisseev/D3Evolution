@@ -249,6 +249,16 @@ function D3Evolution(id, options) {
         return this;
     };
 
+    this.interpolate = function (a) {
+        opts.interpolate = a;
+
+        area.interpolate(opts.interpolate);
+        line.interpolate(opts.interpolate);
+
+        g.selectAll("path.path")
+            .attr("d", (opts.type === "area") ? area : line);
+    };
+
     this.type = function (a) {
         opts.type = a;
 
