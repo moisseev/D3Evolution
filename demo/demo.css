@@ -1,0 +1,29 @@
+body {
+    background-color: #eee;
+    font-size: 13px;
+    padding: 30px;
+    text-align: center;
+}
+h1 {
+    text-indent: 5%;
+}
+div {
+    background-color: white;
+    text-align: left;
+    padding: 10px;
+}
+#main {
+    display: inline-block;
+    margin: 0 auto;
+}
+svg {
+    display: block;
+    margin: 0 auto;
+    border: 1px dashed lightgrey;
+}
+select,
+input {
+    border: 1px solid grey;
+    margin-right: 20px;
+    border-radius: 5px;
+}

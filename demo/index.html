@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>D3Evolution demo</title>
+
+    <link rel="stylesheet" type="text/css" href="../d3evolution.css" />
+    <link rel="stylesheet" type="text/css" href="demo.css" />
+
+    <script src="http://d3js.org/d3.v3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+    <script src="../d3evolution.js"></script>
+</head>
+
+<body>
+
+
+    <div id="main">
+        <h1>D3Evolution demo</h1>
+
+        <div id="chart"></div>
+
+        <div>
+            <form autocomplete="off">
+                Select dataset:
+                <select onchange="getJSON(value)">
+                    <option value="data/hourly.json" selected>Hourly</option>
+                    <option value="data/daily.json">Daily</option>
+                    <option value="data/weekly.json">Weekly</option>
+                    <option value="data/weekly3.json">Weekly3</option>
+                    <option value="data/monthly.json">Monthly</option>
+                </select>
+
+                Select chart type:
+                <select onchange="evolution.type(value);">
+                    <option value="line" selected>Line</option>
+                    <option value="area">Stacked area</option>
+                </select>
+
+                Select <a title="View Mike Bostock's Block." href="https://bl.ocks.org/mbostock/4342190" target="_blank">interpolation mode</a>:
+                <select onchange="evolution.interpolate(value);">
+                    <option value="linear" selected>linear</option>
+                    <option value="step-before">step-before</option>
+                    <option value="step-after">step-after</option>
+                    <option value="basis">basis</option>
+                    <option value="basis-open">basis-open</option>
+                    <option value="basis-closed">basis-closed</option>
+                    <option value="bundle">bundle</option>
+                    <option value="cardinal">cardinal</option>
+                    <option value="cardinal-open">cardinal-open</option>
+                    <option value="cardinal-closed">cardinal-closed</option>
+                    <option value="monotone">monotone</option>
+                </select>
+
+                Select legend:
+                <select onchange="evolution.legend(legend[value]);">
+                    <option value="0" selected>Use options</option>
+                    <option value="1">Legend 1</option>
+                    <option value="2">Legend 2</option>
+                </select>
+            </form>
+        </div>
+
+        <div>
+            <form>
+                <input type="button" value="Destroy chart" onclick="evolution.destroy();" />
+                <input type="button" value="Create new chart using default options" onclick="evolution.destroy(); evolution = new D3Evolution('chart');" />
+            </form>
+        </div>
+    </div>
+
+    <script>
+        "use strict";
+
+        var options = {
+            title: "Rspamd throughput",
+            width: 1060,
+            height: 370,
+
+            legend: {
+                entries: [
+                    {label: "Rejected",      color: "#FF0000"},
+                    {label: "Probable spam", color: "#FFD700"},
+                    {label: "Greylisted",    color: "#436EEE"},
+                    {label: "Clean",         color: "#66cc00"},
+                ]
+            }
+        };
+
+        var legend = [];
+
+        legend[0] = options.legend.entries;
+
+        legend[1] = [
+            {label: "[Rejected]",      color: "#FF0000"},
+            {label: "[Probable spam]", color: "#FFD700"},
+            {label: "[Greylisted]",    color: "#436EEE"},
+            {label: "[Clean]",         color: "#66cc00"},
+        ];
+
+        legend[2] = [
+            {label: "*Rejected*",      color: "blue"},
+            {label: "*Probable spam*", color: "orange"},
+            {label: "*Greylisted*",    color: "green"},
+            {label: "*Clean*",         color: "purple"},
+        ];
+
+        function getJSON(uri) {
+            d3.json(uri, function(error, json) {
+                if (error) return console.warn("d3.json error: " + error);
+                evolution.data(json);
+            });
+        }
+
+        var evolution = new D3Evolution("chart", options);
+        getJSON("data/hourly.json");
+    </script>
+
+</body>
+
+</html>
