@@ -1,0 +1,22 @@
+svg {
+    background-color: white;
+}
+.chart-title {
+    font-size: 17px;
+}
+.grid .tick {
+    stroke: lightgrey;
+    shape-rendering: crispEdges;
+}
+.axis,
+.legend {
+    font-size: 13px;
+}
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+}
+.legend circle {
+    stroke-width: 2px;
+}
