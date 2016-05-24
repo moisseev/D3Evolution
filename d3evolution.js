@@ -257,6 +257,8 @@ function D3Evolution(id, options) {
 
         g.selectAll("path.path")
             .attr("d", (opts.type === "area") ? area : line);
+
+        return this;
     };
 
     this.type = function (a) {
@@ -271,6 +273,8 @@ function D3Evolution(id, options) {
             .style("fill",   (opts.type === "area") ? function (d, i) { return pathColor(i); } : "none")
             .transition().duration(opts.duration)
             .attr("d", (opts.type === "area") ? area : line);
+
+        return this;
     };
 
     this.destroy = function () {
