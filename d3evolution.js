@@ -71,6 +71,7 @@ function D3Evolution(id, options) {
     };
 
     var svg = d3.select("#" + id).append("svg")
+        .classed('d3evolution', true)
         .attr("width", opts.width)
         .attr("height", opts.height);
 
