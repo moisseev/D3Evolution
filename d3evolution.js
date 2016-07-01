@@ -122,14 +122,17 @@ function D3Evolution(id, options) {
         });
 
         var xExtents = d3.extent(d3.merge(data), function (d) { return d.x; });
-        var yExtents = d3.extent(d3.merge(data), function (d) { return d.y; });
-
-        xScale.domain([xExtents[0], xExtents[1]]);
-        yScale.domain([(yExtents[0] > 0) ? 0 : yExtents[0], yExtents[1]]);
+        var yExtents;
 
         if (opts.type === "area") {
             stack(data);
+            yExtents = [0, d3.max(d3.merge(data), function (d) { return d.y0 + d.y; })];
+        } else {
+            yExtents = d3.extent(d3.merge(data), function (d) { return d.y; });
         }
+
+        xScale.domain([xExtents[0], xExtents[1]]);
+        yScale.domain([(yExtents[0] > 0) ? 0 : yExtents[0], yExtents[1]]);
 
         var path = g.selectAll("path.path").data(data);
 
@@ -265,9 +268,16 @@ function D3Evolution(id, options) {
     this.type = function (a) {
         opts.type = a;
 
+        var yExtents;
+
         if (opts.type === "area") {
             stack(data);
+            yExtents = [0, d3.max(d3.merge(data), function (d) { return d.y0 + d.y; })];
+        } else {
+            yExtents = d3.extent(d3.merge(data), function (d) { return d.y; });
         }
+
+        yScale.domain([(yExtents[0] > 0) ? 0 : yExtents[0], yExtents[1]]);
 
         g.selectAll("path.path")
             .style("stroke", (opts.type !== "area") ? function (d, i) { return pathColor(i); } : "none")
