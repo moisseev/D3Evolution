@@ -285,6 +285,11 @@ function D3Evolution(id, options) {
             .transition().duration(opts.duration)
             .attr("d", (opts.type === "area") ? area : line);
 
+        d3.transition().duration(opts.duration).each(function () {
+            g.select(".y.grid").call(yAxisGrid.scale(yScale));
+            g.select(".y.axis").call(yAxis.scale(yScale));
+        });
+
         return this;
     };
 
