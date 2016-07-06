@@ -55,7 +55,24 @@ function D3Evolution(id, options) {
         .y0(function (d) { return yScale(d.y0); })
         .y1(function (d) { return yScale(d.y0 + d.y); })
         .interpolate(opts.interpolate);
-    var stack = d3.layout.stack();
+
+    var stack = function () {
+        var yExtents;
+
+        if (opts.type === "area") {
+            d3.layout.stack()(data);
+            yExtents = [0, d3.max(d3.merge(data), function (d) { return d.y0 + d.y; })];
+        } else {
+            yExtents = d3.extent(d3.merge(data), function (d) { return d.y; });
+        }
+
+        yScale.domain([(yExtents[0] > 0) ? 0 : yExtents[0], yExtents[1]]);
+
+        d3.transition().duration(opts.duration).each(function () {
+            g.select(".y.grid").call(yAxisGrid.scale(yScale));
+            g.select(".y.axis").call(yAxis.scale(yScale));
+        });
+    }
 
     var colorScale = d3.scale.category10();
 
@@ -126,7 +143,7 @@ function D3Evolution(id, options) {
         return dataPercentage;
     }
 
-    var xPreprocess = function () {
+    var yPreprocess = function () {
         if (opts.convert === "percentage") {
             yAxis.tickFormat(d3.format(".0%"));
             data = convert2Percentage(srcData);
@@ -134,17 +151,7 @@ function D3Evolution(id, options) {
             yAxis.tickFormat(null);
             data = srcData;
         }
-
-        var yExtents;
-
-        if (opts.type === "area") {
-            stack(data);
-            yExtents = [0, d3.max(d3.merge(data), function (d) { return d.y0 + d.y; })];
-        } else {
-            yExtents = d3.extent(d3.merge(data), function (d) { return d.y; });
-        }
-
-        yScale.domain([(yExtents[0] > 0) ? 0 : yExtents[0], yExtents[1]]);
+        stack();
     }
 
     this.data = function (a) {
@@ -159,7 +166,7 @@ function D3Evolution(id, options) {
             s.forEach(function (d) { d.x *= 1000; });
         });
 
-        xPreprocess();
+        yPreprocess();
 
         var xExtents = d3.extent(d3.merge(data), function (d) { return d.x; });
         xScale.domain([xExtents[0], xExtents[1]]);
@@ -188,8 +195,6 @@ function D3Evolution(id, options) {
         d3.transition().duration(opts.duration).each(function () {
             g.select(".x.grid").call(xAxisGrid.scale(xScale));
             g.select(".y.grid").call(yAxisGrid.scale(yScale));
-            g.select(".x.axis").call(xAxis.scale(xScale));
-            g.select(".y.axis").call(yAxis.scale(yScale));
         });
 
         var onClick = function (i) {
@@ -286,17 +291,12 @@ function D3Evolution(id, options) {
     this.convert = function (a) {
         opts.convert = a;
 
-        xPreprocess();
+        yPreprocess();
 
         g.selectAll("path.path")
             .data(data)
             .transition().duration(opts.duration)
             .attr("d", (opts.type === "area") ? area : line);
-
-        d3.transition().duration(opts.duration).each(function () {
-            g.select(".y.grid").call(yAxisGrid.scale(yScale));
-            g.select(".y.axis").call(yAxis.scale(yScale));
-        });
 
         return this;
     };
@@ -316,27 +316,13 @@ function D3Evolution(id, options) {
     this.type = function (a) {
         opts.type = a;
 
-        var yExtents;
-
-        if (opts.type === "area") {
-            stack(data);
-            yExtents = [0, d3.max(d3.merge(data), function (d) { return d.y0 + d.y; })];
-        } else {
-            yExtents = d3.extent(d3.merge(data), function (d) { return d.y; });
-        }
-
-        yScale.domain([(yExtents[0] > 0) ? 0 : yExtents[0], yExtents[1]]);
+        stack();
 
         g.selectAll("path.path")
             .style("stroke", (opts.type !== "area") ? function (d, i) { return pathColor(i); } : "none")
             .style("fill",   (opts.type === "area") ? function (d, i) { return pathColor(i); } : "none")
             .transition().duration(opts.duration)
             .attr("d", (opts.type === "area") ? area : line);
-
-        d3.transition().duration(opts.duration).each(function () {
-            g.select(".y.grid").call(yAxisGrid.scale(yScale));
-            g.select(".y.axis").call(yAxis.scale(yScale));
-        });
 
         return this;
     };
