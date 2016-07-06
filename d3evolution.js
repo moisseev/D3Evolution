@@ -90,6 +90,31 @@ function D3Evolution(id, options) {
             "path_" + i;
     };
 
+    var convert2Percentage = function (a) {
+        var total = a.reduce(function (res, curr) {
+            return curr.map(function (d, i) { return d.y + (res[i] ? res[i] : 0); });
+        }, []);
+
+        var dataPercentage = $.extend(true, [], a);
+
+        dataPercentage.forEach(function (s) {
+            s.forEach(function (d, i) { if (total[i]) {d.y /= total[i];} });
+        });
+
+        return dataPercentage;
+    }
+
+    var yPreprocess = function () {
+        if (opts.convert === "percentage") {
+            yAxis.tickFormat(d3.format(".0%"));
+            data = convert2Percentage(srcData);
+        } else {
+            yAxis.tickFormat(null);
+            data = srcData;
+        }
+        stack();
+    }
+
     var svg = d3.select("#" + id).append("svg")
         .classed('d3evolution', true)
         .attr("width", opts.width)
@@ -128,31 +153,6 @@ function D3Evolution(id, options) {
         .attr("y", (opts.margin.top / 3))
         .attr("text-anchor", "middle")
         .text(opts.title);
-
-    var convert2Percentage = function (a) {
-        var total = a.reduce(function (res, curr) {
-            return curr.map(function (d, i) { return d.y + (res[i] ? res[i] : 0); });
-        }, []);
-
-        var dataPercentage = $.extend(true, [], a);
-
-        dataPercentage.forEach(function (s) {
-            s.forEach(function (d, i) { if (total[i]) {d.y /= total[i];} });
-        });
-
-        return dataPercentage;
-    }
-
-    var yPreprocess = function () {
-        if (opts.convert === "percentage") {
-            yAxis.tickFormat(d3.format(".0%"));
-            data = convert2Percentage(srcData);
-        } else {
-            yAxis.tickFormat(null);
-            data = srcData;
-        }
-        stack();
-    }
 
     this.data = function (a) {
         srcData = a;
