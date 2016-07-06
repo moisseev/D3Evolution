@@ -13,6 +13,8 @@ function D3Evolution(id, options) {
         duration: 1250,
         interpolate: "linear",
 
+        //  convert: "percentage",
+
         legend: {
             buttonRadius: 7,
             space: 130,
@@ -27,6 +29,7 @@ function D3Evolution(id, options) {
     }, options);
 
     var data;
+    var srcData;
     var legendX;
 
     var width = opts.width - opts.margin.left - opts.margin.right;
@@ -109,19 +112,29 @@ function D3Evolution(id, options) {
         .attr("text-anchor", "middle")
         .text(opts.title);
 
-    this.data = function (a) {
-        data = a;
+    var convert2Percentage = function (a) {
+        var total = a.reduce(function (res, curr) {
+            return curr.map(function (d, i) { return d.y + (res[i] ? res[i] : 0); });
+        }, []);
 
-        var opacity = [];
+        var dataPercentage = $.extend(true, [], a);
 
-        legendX = opts.width - opts.margin.right - opts.legend.space * data.length;
-
-        // Convert time in seconds to milliseconds
-        data.forEach(function (s) {
-            s.forEach(function (d) { d.x *= 1000; });
+        dataPercentage.forEach(function (s) {
+            s.forEach(function (d, i) { if (total[i]) {d.y /= total[i];} });
         });
 
-        var xExtents = d3.extent(d3.merge(data), function (d) { return d.x; });
+        return dataPercentage;
+    }
+
+    var xPreprocess = function () {
+        if (opts.convert === "percentage") {
+            yAxis.tickFormat(d3.format(".0%"));
+            data = convert2Percentage(srcData);
+        } else {
+            yAxis.tickFormat(null);
+            data = srcData;
+        }
+
         var yExtents;
 
         if (opts.type === "area") {
@@ -131,8 +144,25 @@ function D3Evolution(id, options) {
             yExtents = d3.extent(d3.merge(data), function (d) { return d.y; });
         }
 
-        xScale.domain([xExtents[0], xExtents[1]]);
         yScale.domain([(yExtents[0] > 0) ? 0 : yExtents[0], yExtents[1]]);
+    }
+
+    this.data = function (a) {
+        srcData = a;
+
+        var opacity = [];
+
+        legendX = opts.width - opts.margin.right - opts.legend.space * srcData.length;
+
+        // Convert time in seconds to milliseconds
+        srcData.forEach(function (s) {
+            s.forEach(function (d) { d.x *= 1000; });
+        });
+
+        xPreprocess();
+
+        var xExtents = d3.extent(d3.merge(data), function (d) { return d.x; });
+        xScale.domain([xExtents[0], xExtents[1]]);
 
         var path = g.selectAll("path.path").data(data);
 
@@ -249,6 +279,24 @@ function D3Evolution(id, options) {
             .transition().duration(opts.duration)
             .style("fill",   (opts.type === "area") ? function (d, i) { return pathColor(i); } : "none")
             .style("stroke", (opts.type !== "area") ? function (d, i) { return pathColor(i); } : "none");
+
+        return this;
+    };
+
+    this.convert = function (a) {
+        opts.convert = a;
+
+        xPreprocess();
+
+        g.selectAll("path.path")
+            .data(data)
+            .transition().duration(opts.duration)
+            .attr("d", (opts.type === "area") ? area : line);
+
+        d3.transition().duration(opts.duration).each(function () {
+            g.select(".y.grid").call(yAxisGrid.scale(yScale));
+            g.select(".y.axis").call(yAxis.scale(yScale));
+        });
 
         return this;
     };

@@ -38,6 +38,12 @@
                     <option value="area">Stacked area</option>
                 </select>
 
+                Convert data to:
+                <select onchange="evolution.convert(value);">
+                    <option value="" selected>--</option>
+                    <option value="percentage">percentage</option>
+                </select>
+
                 Select <a title="View Mike Bostock's Block." href="https://bl.ocks.org/mbostock/4342190" target="_blank">interpolation mode</a>:
                 <select onchange="evolution.interpolate(value);">
                     <option value="linear" selected>linear</option>
