@@ -6,6 +6,7 @@ function D3Evolution(id, options) {
         width: 800,
         height: 400,
         margin: {top: 80, right: 60, bottom: 40, left: 60},
+        yAxisLabel: "",
 
         type: "line",
         //  type: "area",
@@ -107,9 +108,11 @@ function D3Evolution(id, options) {
     var yPreprocess = function () {
         if (opts.convert === "percentage") {
             yAxis.tickFormat(d3.format(".0%"));
+            yAxisLabel.transition().duration(opts.duration).style("opacity", 0);
             data = convert2Percentage(srcData);
         } else {
             yAxis.tickFormat(null);
+            yAxisLabel.transition().duration(opts.duration).style("opacity", 1);
             data = srcData;
         }
         stack();
@@ -146,6 +149,12 @@ function D3Evolution(id, options) {
         .attr("class", "y axis")
         .attr("transform", "translate(0,0)")
         .call(yAxis);
+
+    var yAxisLabel = g.append("text")
+        .attr("class", "y label")
+        .attr("x", 20 - opts.margin.left)
+        .attr("y", -20)
+        .text(opts.yAxisLabel);
 
     svg.append("svg:text")
         .attr("class", "chart-title")
