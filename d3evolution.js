@@ -203,7 +203,7 @@ function D3Evolution(id, options) {
 
         d3.transition().duration(opts.duration).each(function () {
             g.select(".x.grid").call(xAxisGrid.scale(xScale));
-            g.select(".y.grid").call(yAxisGrid.scale(yScale));
+            g.select(".x.axis").call(xAxis.scale(xScale));
         });
 
         var onClick = function (i) {
