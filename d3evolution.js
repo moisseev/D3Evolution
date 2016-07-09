@@ -47,11 +47,13 @@ function D3Evolution(id, options) {
         .tickSize(-width, 0);
 
     var line = d3.svg.line()
+        .defined(function(d) { return d.y != null; })
         .x(function (d) { return xScale(d.x); })
         .y(function (d) { return yScale(d.y); })
         .interpolate(opts.interpolate);
 
     var area = d3.svg.area()
+        .defined(function(d) { return d.y != null; })
         .x(function (d) { return xScale(d.x); })
         .y0(function (d) { return yScale(d.y0); })
         .y1(function (d) { return yScale(d.y0 + d.y); })
