@@ -46,6 +46,13 @@ function D3Evolution(id, options) {
     var yAxisGrid = d3.svg.axis().tickFormat("").scale(yScale).orient("left")
         .tickSize(-width, 0);
 
+    var yScaleBoolean = d3.scale.quantize().range([height, 0]);
+    var areaNull = d3.svg.area()
+        .x(function (d) { return xScale(d.x); })
+        .y0(function (d) { return yScaleBoolean(0); })
+        .y1(function (d) { return yScaleBoolean(d.y == null); })
+        .interpolate("step");
+
     var line = d3.svg.line()
         .defined(function(d) { return d.y != null; })
         .x(function (d) { return xScale(d.x); })
@@ -177,10 +184,22 @@ function D3Evolution(id, options) {
             s.forEach(function (d) { d.x *= 1000; });
         });
 
-        yPreprocess();
-
-        var xExtents = d3.extent(d3.merge(data), function (d) { return d.x; });
+        var xExtents = d3.extent(d3.merge(srcData), function (d) { return d.x; });
         xScale.domain([xExtents[0], xExtents[1]]);
+
+        var pathNull = g.selectAll("path.path-null").data(srcData);
+
+        pathNull.enter()
+            .append("path")
+            .attr("class", "path-null");
+
+        pathNull.transition().duration(opts.duration)
+            .attr("d", areaNull);
+
+        pathNull.exit()
+            .remove();
+
+        yPreprocess();
 
         var path = g.selectAll("path.path").data(data);
 
