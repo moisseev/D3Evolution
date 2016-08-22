@@ -71,7 +71,7 @@ function D3Evolution(id, options) {
 
         if (opts.type === "area") {
             d3.layout.stack()(data);
-            yExtents = [0, d3.max(d3.merge(data), function (d) { return d.y0 + d.y; })];
+            yExtents = d3.extent(d3.merge(data), function (d) { return d.y0 + d.y; });
         } else {
             yExtents = d3.extent(d3.merge(data), function (d) { return d.y; });
         }
