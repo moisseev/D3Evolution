@@ -49,7 +49,7 @@ function D3Evolution(id, options) {
     var yScaleBoolean = d3.scale.quantize().range([height, 0]);
     var areaNull = d3.svg.area()
         .x(function (d) { return xScale(d.x); })
-        .y0(function (d) { return yScaleBoolean(0); })
+        .y0(function (d) { return height; })
         .y1(function (d) { return yScaleBoolean(d.y == null); })
         .interpolate("step");
 
