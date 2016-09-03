@@ -38,6 +38,7 @@ JSON dataset format:
 ]
 ```
 where "x": Epoch time (seconds), "y": Y-value or `null` if undefined.
+Each array is represented as a line on the chart.
 
 Loading dataset with d3.json:
 ```javascript
