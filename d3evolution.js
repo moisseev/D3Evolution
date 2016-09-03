@@ -193,8 +193,15 @@ function D3Evolution(id, options) {
             .append("path")
             .attr("class", "path-null");
 
-        pathNull.transition().duration(opts.duration)
-            .attr("d", areaNull);
+        pathNull
+            .transition().duration(opts.duration / 2)
+            .style("opacity", 0)
+            .each("end", function () {
+                pathNull
+                    .attr("d", areaNull)
+                    .transition().duration(opts.duration / 2)
+                    .style("opacity", 1);
+            });
 
         pathNull.exit()
             .remove();
