@@ -26,6 +26,27 @@ For development you can also use links to the latest version. Do not use these l
 <link rel="stylesheet" type="text/css" href="//cdn.rawgit.com/moisseev/D3Evolution/master/d3evolution.css">
 ```
 
+## API
+
+The API functions are accessible like so:
+```javascript
+var evolution = new D3Evolution("id", options);
+evolution.type("area");
+```
+
+**D3Evolution**(_id_[, _options_])    
+is the chart constructor, which takes two parameters. The first parameter is the ID string. The second one is an _options_ hash object. 
+
+### Methods
+Method | Default | Description
+---| :---: | ---
+**convert**(_type_)     | `undefined` | Convert the dataset to percentage if _type_ is `percentage` or leave it as is otherwise.
+**data**(_dataset_)     | -        | Reads _dataset_. See [Reading data](#reading-data).
+**destroy**()           | -        | Removes a chart instance from the page.
+**interpolate**(_mode_) | `linear` | Path interpolation _mode_. For the full list of available modes refer to the `line.interpolate` section of D3 documentation.
+**legend**( ??? )       |          | The `legend` hash object.
+**type**(_type_)        | `line`   | Chart _type_, `area` or `line`.
+
 ## Reading data
 
 JSON dataset format:
