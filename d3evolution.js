@@ -8,8 +8,7 @@ function D3Evolution(id, options) {
         margin: {top: 80, right: 60, bottom: 40, left: 60},
         yAxisLabel: "",
 
-        type: "line",
-        //  type: "area",
+        type: "line", // area|line
 
         duration: 1250,
         interpolate: "linear",
