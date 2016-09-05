@@ -37,6 +37,38 @@ evolution.type("area");
 **D3Evolution**(_id_[, _options_])    
 is the chart constructor, which takes two parameters. The first parameter is the ID string. The second one is an _options_ hash object. 
 
+### The options object
+
+Default settings:
+```javascript
+{
+    title: "",
+    width: 800,
+    height: 400,
+    margin: {top: 80, right: 60, bottom: 40, left: 60},
+    yAxisLabel: "",
+
+    type: "line", // area|line
+
+    duration: 1250,
+    interpolate: "linear",
+
+    //  convert: "percentage",
+
+    legend: {
+        buttonRadius: 7,
+        space: 130,
+
+        entries: [
+            //  ,
+            //  ,
+            //  {label: "Greylisted", color: "#436EEE"},
+            //  {label: "Clean",      color: "#66cc00"},
+        ]
+    }
+}
+```
+
 ### Methods
 Method | Default | Description
 ---| :---: | ---
