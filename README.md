@@ -69,6 +69,21 @@ Default settings:
 }
 ```
 
+Options details:
+
+Option | Type | Default | Description
+---| --- | --- | ---
+**title**       | `string` | empty | Title of the chart.
+**width**       | `number` | 800 | Width of the chart in pixels.
+**height**      | `number` | 400 | Height of the chart in pixels.
+**margin**      | `hash`   | see description | Margins of the inner chart area (clockwise from the top, as in CSS). The default are `{top: 80, right: 60, bottom: 40, left: 60}`
+**yAxisLabel**  | `string` | empty | Label of the Y-axis.
+**type**        | `string` | line | Type of the chart, `line` or `area`.
+**duration**    | `number` | 1250 | Transition effects duration in milliseconds.
+**interpolate** | `string` | linear | Path interpolation _mode_. For the full list of available modes refer to the `line.interpolate` section of D3 documentation.
+**convert**     | `string` | undefined | Convert the dataset to percentage if set to `percentage` or leave it as is otherwise.
+**legend**      | `hash` | see description | The `legend` hash object. The default is `{buttonRadius: 7, space: 130, entries: []}`
+
 ### Methods
 Method | Default | Description
 ---| :---: | ---
