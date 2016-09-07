@@ -83,6 +83,9 @@ Option | Type | Default | Description
 **interpolate** | `string` | linear | Path interpolation _mode_. For the full list of available modes refer to the `line.interpolate` section of D3 documentation.
 **convert**     | `string` | undefined | Convert the dataset to percentage if set to `percentage` or leave it as is otherwise.
 **legend**      | `hash` | see description | The `legend` hash object. The default is `{buttonRadius: 7, space: 130, entries: []}`
+legend.buttonRadius | `number` | 7 | Legend buttons radius in pixels.
+legend.space   | `number` | 130 | Horizontal space between legend entries in pixels.
+legend.entries | `array` | [] | An array of legend entries. Each of the entries is a hash with structure `{label: "Label", color: "#436EEE"}`. `path_N` labels (where `N` is the index of the array element) and `d3.scale.category10()` color palette are used for undefined legend entries.
 
 ### Methods
 Method | Default | Description
