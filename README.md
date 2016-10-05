@@ -8,7 +8,7 @@ Live demo is available at http://moisseev.github.io/D3Evolution/demo/
 In your page, include the `D3` and `jQuery` libraries. These can be placed anywhere:
 ```html
 <script src="http://d3js.org/d3.v3.min.js"></script>
-<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 ```
 
 ## Installing
