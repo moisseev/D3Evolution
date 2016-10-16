@@ -65,6 +65,10 @@
                     <option value="0" selected>Use options</option>
                     <option value="1">Legend 1</option>
                     <option value="2">Legend 2</option>
+                    <option value="3">Radius 5</option>
+                    <option value="4">Radius 10</option>
+                    <option value="5">Space 100</option>
+                    <option value="6">Space 150</option>
                 </select>
             </form>
         </div>
@@ -98,21 +102,30 @@
 
         var legend = [];
 
-        legend[0] = options.legend.entries;
+        legend[0] = options.legend;
 
-        legend[1] = [
-            {label: "[Rejected]",      color: "#FF0000"},
-            {label: "[Probable spam]", color: "#FFD700"},
-            {label: "[Greylisted]",    color: "#436EEE"},
-            {label: "[Clean]",         color: "#66cc00"},
-        ];
+        legend[1] = {
+            entries: [
+                {label: "[Rejected]",      color: "#FF0000"},
+                {label: "[Probable spam]", color: "#FFD700"},
+                {label: "[Greylisted]",    color: "#436EEE"},
+                {label: "[Clean]",         color: "#66cc00"},
+            ]
+        };
 
-        legend[2] = [
-            {label: "*Rejected*",      color: "blue"},
-            {label: "*Probable spam*", color: "orange"},
-            {label: "*Greylisted*",    color: "green"},
-            {label: "*Clean*",         color: "purple"},
-        ];
+        legend[2] = {
+            entries: [
+                {label: "*Rejected*",      color: "blue"},
+                {label: "*Probable spam*", color: "orange"},
+                {label: "*Greylisted*",    color: "green"},
+                {label: "*Clean*",         color: "purple"},
+            ]
+        };
+
+        legend[3] = { buttonRadius: 5 };
+        legend[4] = { buttonRadius: 10 };
+        legend[5] = { space: 100 };
+        legend[6] = { space: 150 };
 
         function getJSON(uri) {
             d3.json(uri, function(error, json) {

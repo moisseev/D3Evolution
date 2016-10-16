@@ -305,16 +305,21 @@ function D3Evolution(id, options) {
     };
 
     this.legend = function (a) {
-        $.extend(true, opts.legend.entries, a);
+        $.extend(true, opts.legend, a);
 
         legend.selectAll("circle")
-            .attr("cx", function (d, i) { return legendX + opts.legend.space * i; })
             .transition().duration(opts.duration)
+            .attr("cx", function (d, i) { return legendX + opts.legend.space * i; })
+            .attr("r", opts.legend.buttonRadius)
             .style("fill",   function (d, i) { return pathColor(i); })
             .style("stroke", function (d, i) { return pathColor(i); });
 
         legend.selectAll("text")
-            .text(function (d, i) { return pathLabel(i); });
+            .text(function (d, i) { return pathLabel(i); })
+            .transition().duration(opts.duration)
+            .attr("x", function (d, i) {
+                return legendX + opts.legend.space * i + 2 * opts.legend.buttonRadius;
+            });
 
         g.selectAll("path.path")
             .transition().duration(opts.duration)

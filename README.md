@@ -94,7 +94,7 @@ Method | Default | Description
 **data**(_dataset_)     | -        | Reads _dataset_. See [Reading data](#reading-data).
 **destroy**()           | -        | Removes a chart instance from the page.
 **interpolate**(_mode_) | `linear` | Path interpolation _mode_. For the full list of available modes refer to the `line.interpolate` section of D3 documentation.
-**legend**( ??? )       |          | The `legend` hash object.
+**legend**(_legend_)    | -        | Updates the chart legend using a `legend` hash object as an argument.
 **type**(_type_)        | `line`   | Chart _type_, `area` or `line`.
 
 ## Reading data
