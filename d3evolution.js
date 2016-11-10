@@ -245,22 +245,22 @@ function D3Evolution(id, options) {
                 .style("opacity", opacity[i]);
         };
 
-        var onMouseover = function (i) {
-            d3.select("#circle_" + i)
+        var onMouseover = function (a) {
+            d3.select("#circle_" + a)
                 .attr("r", opts.legend.buttonRadius * 1.3);
 
-            d3.select("#path_" + i)
-                .style("opacity", 0.4)
-                .style("fill-opacity", 0.4);
+            path
+                .style("opacity",      function (d, i) { return i === a ? 1 : opacity[i] == 0 ? 0 : 0.4; })
+                .style("fill-opacity", function (d, i) { return i === a ? 1 : opacity[i] == 0 ? 0 : 0.4; });
         };
 
-        var onMouseout = function (i) {
-            d3.select("#circle_" + i)
+        var onMouseout = function (a) {
+            d3.select("#circle_" + a)
                 .attr("r", opts.legend.buttonRadius);
 
-            d3.select("#path_" + i)
-                .style("opacity", opacity[i])
-                .style("fill-opacity", opacity[i]);
+            path
+                .style("opacity",      function (d, i) { return opacity[i]; })
+                .style("fill-opacity", function (d, i) { return opacity[i]; });
         };
 
         var buttons = legend.selectAll("circle").data(data);
