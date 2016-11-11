@@ -252,7 +252,7 @@ function D3Evolution(id, options) {
             d3.select("#circle_" + a)
                 .attr("r", opts.legend.buttonRadius * 1.3);
 
-            path
+            g.selectAll("path.path")
                 .style("opacity",      function (d, i) { return i === a ? 1 : opacity[i] == 0 ? 0 : 0.4; })
                 .style("fill-opacity", function (d, i) { return i === a ? 1 : opacity[i] == 0 ? 0 : 0.4; });
         };
@@ -261,7 +261,7 @@ function D3Evolution(id, options) {
             d3.select("#circle_" + a)
                 .attr("r", opts.legend.buttonRadius);
 
-            path
+            g.selectAll("path.path")
                 .style("opacity",      function (d, i) { return opacity[i]; })
                 .style("fill-opacity", function (d, i) { return opacity[i]; });
         };
