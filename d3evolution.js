@@ -213,6 +213,9 @@ function D3Evolution(id, options) {
             .append("path")
             .attr("class", "path")
             .attr("id", function (d, i) { return "path_" + i; })
+            .on("click",     function (d, i) { onClick(i); })
+            .on("mouseover", function (d, i) { onMouseover(i); })
+            .on("mouseout",  function (d, i) { onMouseout(i); })
             .style((opts.type === "area") ? {
                 fill:   function (d, i) { return pathColor(i); },
                 stroke: "none",
