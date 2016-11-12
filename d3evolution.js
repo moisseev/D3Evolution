@@ -214,8 +214,8 @@ function D3Evolution(id, options) {
             .attr("class", "path")
             .attr("id", function (d, i) { return "path_" + i; })
             .on("click",     function (d, i) { onClick(i); })
-            .on("mouseover", function (d, i) { onMouseover(i); })
-            .on("mouseout",  function (d, i) { onMouseout(i); })
+            .on("mouseover", function (d, i) { highlight(i); })
+            .on("mouseout",  function (d, i) { highlight(i, false); })
             .style((opts.type === "area") ? {
                 fill:   function (d, i) { return pathColor(i); },
                 stroke: "none",
@@ -248,22 +248,24 @@ function D3Evolution(id, options) {
                 .style("opacity", opacity[i]);
         };
 
-        var onMouseover = function (a) {
-            d3.select("#circle_" + a)
-                .attr("r", opts.legend.buttonRadius * 1.3);
+        /**
+         * Highlight selected path and legend circle.
+         * @param {number} s - Selected path index.
+         * @param {boolean} [h] - If false, restore previous state.
+         */
+        const highlight = function (s, h) {
+            d3.select("#circle_" + s)
+                .attr("r", opts.legend.buttonRadius * (h === false ? 1 : 1.3));
+
+            const op = function (i) {
+                if (h === false)
+                    return opacity[i];
+                return (i === s) ? 1 : (opacity[i] == 0) ? 0 : 0.4;
+            };
 
             g.selectAll("path.path")
-                .style("opacity",      function (d, i) { return i === a ? 1 : opacity[i] == 0 ? 0 : 0.4; })
-                .style("fill-opacity", function (d, i) { return i === a ? 1 : opacity[i] == 0 ? 0 : 0.4; });
-        };
-
-        var onMouseout = function (a) {
-            d3.select("#circle_" + a)
-                .attr("r", opts.legend.buttonRadius);
-
-            g.selectAll("path.path")
-                .style("opacity",      function (d, i) { return opacity[i]; })
-                .style("fill-opacity", function (d, i) { return opacity[i]; });
+                .style("opacity",      function (d, i) { return op(i); })
+                .style("fill-opacity", function (d, i) { return op(i); });
         };
 
         var buttons = legend.selectAll("circle").data(data);
@@ -276,8 +278,8 @@ function D3Evolution(id, options) {
             .style("stroke", function (d, i) { return pathColor(i); })
             .style("fill-opacity", function (d, i) { return opacity[i] + 0.2; })
             .on("click",     function (d, i) { onClick(i); })
-            .on("mouseover", function (d, i) { onMouseover(i); })
-            .on("mouseout",  function (d, i) { onMouseout(i); });
+            .on("mouseover", function (d, i) { highlight(i); })
+            .on("mouseout",  function (d, i) { highlight(i, false); });
 
         buttons.exit()
             .remove();
@@ -293,8 +295,8 @@ function D3Evolution(id, options) {
             .attr("dy", "0.3em")
             .text(function (d, i) { return pathLabel(i); })
             .on("click",     function (d, i) { onClick(i); })
-            .on("mouseover", function (d, i) { onMouseover(i); })
-            .on("mouseout",  function (d, i) { onMouseout(i); });
+            .on("mouseover", function (d, i) { highlight(i); })
+            .on("mouseout",  function (d, i) { highlight(i, false); });
 
         labels.exit()
             .remove();
