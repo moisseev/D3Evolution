@@ -162,6 +162,7 @@ function D3Evolution(id, options) {
         .attr("class", "y label")
         .attr("x", 20 - opts.margin.left)
         .attr("y", -20)
+        .style("opacity", (opts.convert === "percentage") ? 0 : 1)
         .text(opts.yAxisLabel);
 
     svg.append("svg:text")
