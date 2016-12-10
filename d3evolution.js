@@ -173,7 +173,7 @@ function D3Evolution(id, options) {
         .text(opts.title);
 
     this.data = function (a) {
-        srcData = a;
+        srcData = $.extend(true, [], a);
 
         var opacity = [];
 
