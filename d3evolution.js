@@ -165,12 +165,16 @@ function D3Evolution(id, options) {
         .style("opacity", (opts.convert === "percentage") ? 0 : 1)
         .text(opts.yAxisLabel);
 
-    svg.append("svg:text")
-        .attr("class", "chart-title")
+    var title = svg.append("svg:text")
         .attr("x", (opts.width / 2))
         .attr("y", (opts.margin.top / 3))
-        .attr("text-anchor", "middle")
-        .text(opts.title);
+        .attr("text-anchor", "middle");
+
+    title.append("tspan")
+        .attr("class", "chart-title")
+        .text(opts.title + " ");
+
+    title.timeRange = title.append("tspan");
 
     this.data = function (a) {
         srcData = $.extend(true, [], a);
@@ -186,6 +190,12 @@ function D3Evolution(id, options) {
 
         var xExtents = d3.extent(d3.merge(srcData), function (d) { return d.x; });
         xScale.domain([xExtents[0], xExtents[1]]);
+
+        const iso = function (a) {
+            return d3.time.format("%Y-%m-%d %H:%M:%S")(new Date(a));
+        };
+        title.timeRange
+            .text("[ " + iso(xExtents[0]) + " / " + iso(xExtents[1]) + " ]");
 
         var pathNull = g.selectAll("path.path-null").data(srcData);
 
