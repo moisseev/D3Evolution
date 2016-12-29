@@ -1,3 +1,8 @@
+/*!
+ * D3Evolution 0.0.1 (https://github.com/moisseev/D3Evolution)
+ * Copyright (c) 2016, Alexander Moisseev, BSD 2-Clause
+ */
+
 function D3Evolution(id, options) {
     "use strict";
 
