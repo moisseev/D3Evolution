@@ -96,6 +96,7 @@ Method | Default | Description
 **interpolate**(_mode_) | `linear` | Path interpolation _mode_. For the full list of available modes refer to the `line.interpolate` section of D3 documentation.
 **legend**(_legend_)    | -        | Updates the chart legend using a `legend` hash object as an argument.
 **type**(_type_)        | `line`   | Chart _type_, `area` or `line`.
+**yAxisLabel**(_label_) | empty    | Updates the Y-axis label.
 
 ## Reading data
 

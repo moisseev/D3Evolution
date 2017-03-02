@@ -389,6 +389,21 @@ function D3Evolution(id, options) {
         return this;
     };
 
+    this.yAxisLabel = function (a) {
+        opts.yAxisLabel = a;
+        yAxisLabel
+            .transition().duration(opts.duration / 2)
+            .style("opacity", 0)
+            .each("end", function () {
+                yAxisLabel
+                    .text(opts.yAxisLabel)
+                    .transition().duration(opts.duration / 2)
+                    .style("opacity", 1);
+            });
+
+        return this;
+    };
+
     this.destroy = function () {
         d3.select("svg").remove();
     };
