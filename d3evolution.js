@@ -33,6 +33,21 @@ function D3Evolution(id, options) {
         }
     }, options);
 
+    const curves = {
+        "linear":          d3.curveLinear,
+        "step":            d3.curveStep,
+        "step-before":     d3.curveStepBefore,
+        "step-after":      d3.curveStepAfter,
+        "basis":           d3.curveBasis,
+        "basis-open":      d3.curveBasisOpen,
+        "basis-closed":    d3.curveBasisClosed,
+        "bundle":          d3.curveBundle,
+        "cardinal":        d3.curveCardinal,
+        "cardinal-open":   d3.curveCardinalOpen,
+        "cardinal-closed": d3.curveCardinalClosed,
+        "monotone":        d3.curveMonotoneX,
+    };
+
     var data;
     var srcData;
     var legendX;
@@ -40,41 +55,41 @@ function D3Evolution(id, options) {
     var width = opts.width - opts.margin.left - opts.margin.right;
     var height = opts.height - opts.margin.top - opts.margin.bottom;
 
-    var xScale = d3.time.scale().range([0, width]);
-    var yScale = d3.scale.linear().range([height, 0]);
-    var xAxis = d3.svg.axis().scale(xScale);
-    var yAxis = d3.svg.axis().scale(yScale).orient("left").ticks(5);
+    var xScale = d3.scaleTime().range([0, width]);
+    var yScale = d3.scaleLinear().range([height, 0]);
+    var xAxis = d3.axisBottom().scale(xScale);
+    var yAxis = d3.axisLeft().scale(yScale).ticks(5);
 
-    var xAxisGrid = d3.svg.axis().tickFormat("").scale(xScale)
+    var xAxisGrid = d3.axisBottom().tickFormat("").scale(xScale)
         .tickSize(-height, 0);
-    var yAxisGrid = d3.svg.axis().tickFormat("").scale(yScale).orient("left")
+    var yAxisGrid = d3.axisLeft().tickFormat("").scale(yScale)
         .tickSize(-width, 0);
 
-    var yScaleBoolean = d3.scale.quantize().range([height, 0]);
-    var areaNull = d3.svg.area()
+    var yScaleBoolean = d3.scaleQuantize().range([height, 0]);
+    var areaNull = d3.area()
         .x(function (d) { return xScale(d.x); })
         .y0(function (d) { return height; })
         .y1(function (d) { return yScaleBoolean(d.y == null); })
-        .interpolate("step");
+        .curve(d3.curveStep);
 
-    var line = d3.svg.line()
+    var line = d3.line()
         .defined(function(d) { return d.y != null; })
         .x(function (d) { return xScale(d.x); })
         .y(function (d) { return yScale(d.y); })
-        .interpolate(opts.interpolate);
+        .curve(curves[opts.interpolate]);
 
-    var area = d3.svg.area()
+    var area = d3.area()
         .defined(function(d) { return d.y != null; })
         .x(function (d) { return xScale(d.x); })
         .y0(function (d) { return yScale(d.y0); })
         .y1(function (d) { return yScale(d.y0 + d.y); })
-        .interpolate(opts.interpolate);
+        .curve(curves[opts.interpolate]);
 
     var stack = function () {
         var yExtents;
 
         if (opts.type === "area") {
-            d3.layout.stack()(data);
+            d3.stack()(data);
             yExtents = d3.extent(d3.merge(data), function (d) { return d.y0 + d.y; });
         } else {
             yExtents = d3.extent(d3.merge(data), function (d) { return d.y; });
@@ -82,13 +97,14 @@ function D3Evolution(id, options) {
 
         yScale.domain([(yExtents[0] > 0) ? 0 : yExtents[0], yExtents[1]]);
 
-        d3.transition().duration(opts.duration).each(function () {
-            g.select(".y.grid").call(yAxisGrid.scale(yScale));
-            g.select(".y.axis").call(yAxis.scale(yScale));
-        });
+        const t = d3.transition()
+            .duration(opts.duration);
+
+        g.select(".y.grid").transition(t).call(yAxisGrid.scale(yScale));
+        g.select(".y.axis").transition(t).call(yAxis.scale(yScale));
     }
 
-    var colorScale = d3.scale.category10();
+    var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
     var pathColor = function (i) {
         return (opts.legend.entries[i] !== undefined &&
@@ -197,7 +213,7 @@ function D3Evolution(id, options) {
         xScale.domain([xExtents[0], xExtents[1]]);
 
         const iso = function (a) {
-            return d3.time.format("%Y-%m-%d %H:%M:%S")(new Date(a));
+            return d3.timeFormat("%Y-%m-%d %H:%M:%S")(new Date(a));
         };
         title.timeRange
             .text("[ " + iso(xExtents[0]) + " / " + iso(xExtents[1]) + " ]");
@@ -208,11 +224,11 @@ function D3Evolution(id, options) {
             .append("path")
             .attr("class", "path-null");
 
-        pathNull
+        g.selectAll("path.path-null")
             .transition().duration(opts.duration / 2)
             .style("opacity", 0)
-            .each("end", function () {
-                pathNull
+            .on("end", function () {
+                g.selectAll("path.path-null")
                     .attr("d", areaNull)
                     .transition().duration(opts.duration / 2)
                     .style("opacity", 1);
@@ -227,12 +243,13 @@ function D3Evolution(id, options) {
 
         path.enter()
             .append("path")
+            .merge(path)
             .attr("class", "path")
             .attr("id", function (d, i) { return "path_" + i; })
             .on("click",     function (d, i) { onClick(i); })
             .on("mouseover", function (d, i) { highlight(i); })
             .on("mouseout",  function (d, i) { highlight(i, false); })
-            .style((opts.type === "area") ? {
+            .styles((opts.type === "area") ? {
                 fill:   function (d, i) { return pathColor(i); },
                 stroke: "none",
                 "fill-opacity": function (d, i) { return opacity[i]; }
@@ -242,15 +259,18 @@ function D3Evolution(id, options) {
                 opacity: function (d, i) { return opacity[i]; }
             });
 
-        path.transition().duration(opts.duration).attr("d", (opts.type === "area") ? area : line);
+        g.selectAll("path.path")
+            .transition().duration(opts.duration)
+            .attr("d", (opts.type === "area") ? area : line);
 
         path.exit()
             .remove();
 
-        d3.transition().duration(opts.duration).each(function () {
-            g.select(".x.grid").call(xAxisGrid.scale(xScale));
-            g.select(".x.axis").call(xAxis.scale(xScale));
-        });
+        const t = d3.transition()
+            .duration(opts.duration);
+
+        g.select(".x.grid").transition(t).call(xAxisGrid.scale(xScale));
+        g.select(".x.axis").transition(t).call(xAxis.scale(xScale));
 
         var onClick = function (i) {
             opacity[i] = (opacity[i] != 0) ? 0 : 1;
@@ -300,7 +320,8 @@ function D3Evolution(id, options) {
         buttons.exit()
             .remove();
 
-        buttons.transition().duration(opts.duration)
+        legend.selectAll("circle")
+            .transition().duration(opts.duration)
             .attr("cx", function (d, i) { return legendX + opts.legend.space * i; });
 
         var labels = legend.selectAll("text").data(data);
@@ -317,7 +338,8 @@ function D3Evolution(id, options) {
         labels.exit()
             .remove();
 
-        labels.transition().duration(opts.duration)
+        legend.selectAll("text")
+            .transition().duration(opts.duration)
             .attr("x", function (d, i) {
                 return legendX + opts.legend.space * i + 2 * opts.legend.buttonRadius;
             });
@@ -366,8 +388,8 @@ function D3Evolution(id, options) {
     this.interpolate = function (a) {
         opts.interpolate = a;
 
-        area.interpolate(opts.interpolate);
-        line.interpolate(opts.interpolate);
+        area.curve(curves[opts.interpolate]);
+        line.curve(curves[opts.interpolate]);
 
         g.selectAll("path.path")
             .attr("d", (opts.type === "area") ? area : line);
@@ -394,7 +416,7 @@ function D3Evolution(id, options) {
         yAxisLabel
             .transition().duration(opts.duration / 2)
             .style("opacity", 0)
-            .each("end", function () {
+            .on("end", function () {
                 yAxisLabel
                     .text(opts.yAxisLabel)
                     .transition().duration(opts.duration / 2)
