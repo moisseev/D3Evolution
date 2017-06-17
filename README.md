@@ -51,7 +51,7 @@ Default settings:
     type: "line", // area|line
 
     duration: 1250,
-    interpolate: "linear",
+    interpolate: "curveLinear",
 
     //  convert: "percentage",
 
@@ -80,7 +80,7 @@ Option | Type | Default | Description
 **yAxisLabel**  | `string` | empty | Label of the Y-axis.
 **type**        | `string` | line | Type of the chart, `line` or `area`.
 **duration**    | `number` | 1250 | Transition effects duration in milliseconds.
-**interpolate** | `string` | linear | Path interpolation _mode_. For the full list of available modes refer to the `line.interpolate` section of D3 documentation.
+**interpolate** | `string` | curveLinear | Path interpolation _mode_. See [Interpolation modes](#interpolation-modes).
 **convert**     | `string` | undefined | Convert the dataset to percentage if set to `percentage` or leave it as is otherwise.
 **legend**      | `hash` | see description | The `legend` hash object. The default is `{buttonRadius: 7, space: 130, entries: []}`
 legend.buttonRadius | `number` | 7 | Legend buttons radius in pixels.
@@ -93,10 +93,29 @@ Method | Default | Description
 **convert**(_type_)     | `undefined` | Convert the dataset to percentage if _type_ is `percentage` or leave it as is otherwise.
 **data**(_dataset_)     | -        | Reads _dataset_. See [Reading data](#reading-data).
 **destroy**()           | -        | Removes a chart instance from the page.
-**interpolate**(_mode_) | `linear` | Path interpolation _mode_. For the full list of available modes refer to the `line.interpolate` section of D3 documentation.
+**interpolate**(_mode_) | `curveLinear` | Path interpolation _mode_. See [Interpolation modes](#interpolation-modes).
 **legend**(_legend_)    | -        | Updates the chart legend using a `legend` hash object as an argument.
 **type**(_type_)        | `line`   | Chart _type_, `area` or `line`.
 **yAxisLabel**(_label_) | empty    | Updates the Y-axis label.
+
+### Interpolation modes
+Mode|
+---|
+`curveLinear`|
+`curveStep`|
+`curveStepBefore`|
+`curveStepAfter`|
+`curveMonotoneX`|
+`curveBasis`|
+`curveBasisOpen`|
+`curveBundle`|
+`curveCardinal`|
+`curveCardinalOpen`|
+`curveCatmullRom`|
+`curveCatmullRomOpen`|
+`curveNatural`|
+
+For modes description refer to the [Curves](https://github.com/d3/d3-shape#curves) section of `d3-shape` documentation.
 
 ## Reading data
 

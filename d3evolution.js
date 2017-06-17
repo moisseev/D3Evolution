@@ -16,7 +16,7 @@ function D3Evolution(id, options) {
         type: "line", // area|line
 
         duration: 1250,
-        interpolate: "linear",
+        interpolate: "curveLinear",
 
         //  convert: "percentage",
 
@@ -34,18 +34,19 @@ function D3Evolution(id, options) {
     }, options);
 
     const curves = {
-        "linear":          d3.curveLinear,
-        "step":            d3.curveStep,
-        "step-before":     d3.curveStepBefore,
-        "step-after":      d3.curveStepAfter,
-        "basis":           d3.curveBasis,
-        "basis-open":      d3.curveBasisOpen,
-        "basis-closed":    d3.curveBasisClosed,
-        "bundle":          d3.curveBundle,
-        "cardinal":        d3.curveCardinal,
-        "cardinal-open":   d3.curveCardinalOpen,
-        "cardinal-closed": d3.curveCardinalClosed,
-        "monotone":        d3.curveMonotoneX,
+        "curveLinear":          d3.curveLinear,
+        "curveStep":            d3.curveStep,
+        "curveStepBefore":      d3.curveStepBefore,
+        "curveStepAfter":       d3.curveStepAfter,
+        "curveMonotoneX":       d3.curveMonotoneX,
+        "curveBasis":           d3.curveBasis,
+        "curveBasisOpen":       d3.curveBasisOpen,
+        "curveBundle":          d3.curveBundle,
+        "curveCardinal":        d3.curveCardinal,
+        "curveCardinalOpen":    d3.curveCardinalOpen,
+        "curveCatmullRom":      d3.curveCatmullRom,
+        "curveCatmullRomOpen":  d3.curveCatmullRomOpen,
+        "curveNatural":         d3.curveNatural,
     };
 
     var data;
