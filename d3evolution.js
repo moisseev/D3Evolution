@@ -85,11 +85,20 @@ function D3Evolution(id, options) {
         .y1(function (d) { return yScale(d.y0 + d.y); })
         .curve(curves[opts.interpolate]);
 
+    var d3v3LayoutStack = function (data) {
+        data.reduce(function (res, curr) {
+            curr.map(function (d, i) {
+                d.y0 = (res.length ? res[i].y + res[i].y0 : 0);
+            });
+            return curr;
+        }, []);
+    };
+
     var stack = function () {
         var yExtents;
 
         if (opts.type === "area") {
-            d3.stack()(data);
+            d3v3LayoutStack(data);
             yExtents = d3.extent(d3.merge(data), function (d) { return d.y0 + d.y; });
         } else {
             yExtents = d3.extent(d3.merge(data), function (d) { return d.y; });
@@ -102,7 +111,7 @@ function D3Evolution(id, options) {
 
         g.select(".y.grid").transition(t).call(yAxisGrid.scale(yScale));
         g.select(".y.axis").transition(t).call(yAxis.scale(yScale));
-    }
+    };
 
     var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
