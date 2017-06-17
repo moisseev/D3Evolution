@@ -8,7 +8,6 @@ Live demo is available at http://moisseev.github.io/D3Evolution/demo/
 In your page, include the `D3`, `d3-selection-multi` and `jQuery` libraries. These can be placed anywhere:
 ```html
 <script src="https://d3js.org/d3.v4.min.js"></script>
-<script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 ```
 

@@ -258,23 +258,28 @@ function D3Evolution(id, options) {
             .attr("id", function (d, i) { return "path_" + i; })
             .on("click",     function (d, i) { onClick(i); })
             .on("mouseover", function (d, i) { highlight(i); })
-            .on("mouseout",  function (d, i) { highlight(i, false); })
-            .styles((opts.type === "area") ? {
-                fill:   function (d, i) { return pathColor(i); },
-                stroke: "none",
-                "fill-opacity": function (d, i) { return opacity[i]; }
-            } : {
-                fill:   "none",
-                stroke:  function (d, i) { return pathColor(i); },
-                opacity: function (d, i) { return opacity[i]; }
-            });
-
-        g.selectAll("path.path")
-            .transition().duration(opts.duration)
-            .attr("d", (opts.type === "area") ? area : line);
+            .on("mouseout",  function (d, i) { highlight(i, false); });
 
         path.exit()
             .remove();
+
+        path = g.selectAll("path.path");
+
+        if (opts.type === "area") {
+            path
+                .style("fill", function (d, i) { return pathColor(i); })
+                .style("stroke", "none")
+                .style("fill-opacity", function (d, i) { return opacity[i]; });
+        } else {
+            path
+                .style("fill", "none")
+                .style("stroke", function (d, i) { return pathColor(i); })
+                .style("opacity", function (d, i) { return opacity[i]; });
+        }
+
+        path
+            .transition().duration(opts.duration)
+            .attr("d", (opts.type === "area") ? area : line);
 
         const t = d3.transition()
             .duration(opts.duration);
