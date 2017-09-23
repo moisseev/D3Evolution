@@ -4,9 +4,12 @@
 .d3evolution .chart-title {
     font-size: 17px;
 }
+.d3evolution .y.label {
+    font-weight: normal;
+}
 .d3evolution .grid line {
     stroke: lightgrey;
-    stroke-opacity: .7; 
+    stroke-opacity: .7;
     shape-rendering: crispEdges;
 }
 .d3evolution .grid path {
@@ -14,13 +17,13 @@
 }
 .d3evolution .axis,
 .d3evolution .legend {
-    font-size: 13px;
+    font-size: 12px;
 }
 .d3evolution .axis path,
 .d3evolution .axis line {
     fill: none;
     stroke: grey;
-    shape-rendering: crispEdges; 
+    shape-rendering: crispEdges;
 }
 .d3evolution .legend circle {
     stroke-width: 2px;
