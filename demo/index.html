@@ -38,6 +38,12 @@
                     <option value="area">Stacked area</option>
                 </select>
 
+                Select Y-scale:
+                <select onchange="evolution.yScale(value);">
+                    <option value="lin" selected>Lin</option>
+                    <option value="log">Log</option>
+                </select>
+
                 Convert data to:
                 <select onchange="evolution.convert(value);">
                     <option value="" selected>--</option>

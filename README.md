@@ -49,6 +49,7 @@ Default settings:
     yAxisLabel: "",
 
     type: "line", // area|line
+    yScale: "lin", // lin|log
 
     duration: 1250,
     interpolate: "curveLinear",
@@ -79,6 +80,7 @@ Option | Type | Default | Description
 **margin**      | `hash`   | see description | Margins of the inner chart area (clockwise from the top, as in CSS). The default are `{top: 80, right: 60, bottom: 40, left: 60}`
 **yAxisLabel**  | `string` | empty | Label of the Y-axis.
 **type**        | `string` | line | Type of the chart, `line` or `area`.
+**yScale**      | `string` | lin  | Vertical scale, linear - `lin` or logarithmic - `log`.
 **duration**    | `number` | 1250 | Transition effects duration in milliseconds.
 **interpolate** | `string` | curveLinear | Path interpolation _mode_. See [Interpolation modes](#interpolation-modes).
 **convert**     | `string` | undefined | Convert the dataset to percentage if set to `percentage` or leave it as is otherwise.
@@ -97,6 +99,7 @@ Method | Default | Description
 **legend**(_legend_)    | -        | Updates the chart legend using a `legend` hash object as an argument.
 **type**(_type_)        | `line`   | Chart _type_, `area` or `line`.
 **yAxisLabel**(_label_) | empty    | Updates the Y-axis label.
+**yScale**(_scale_)     | `lin`    | Switch vertical _scale_ to logarithmic - `log` or linear - `lin`.
 
 ### Interpolation modes
 Mode|

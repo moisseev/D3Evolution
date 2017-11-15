@@ -14,6 +14,7 @@ function D3Evolution(id, options) {
         yAxisLabel: "",
 
         type: "line", // area|line
+        yScale: "lin", // lin|log
 
         duration: 1250,
         interpolate: "curveLinear",
@@ -57,13 +58,28 @@ function D3Evolution(id, options) {
     var height = opts.height - opts.margin.top - opts.margin.bottom;
 
     var xScale = d3.scaleTime().range([0, width]);
-    var yScale = d3.scaleLinear().range([height, 0]);
+
+    var yScale;
+    var yAxisScale;
+
+    const setYScale = function () {
+        if (opts.yScale === "log") {
+            yScale = d3.scaleLog().clamp(true).range([height, 0]);
+            yAxisScale = d3.scaleLog().range([height - 30, 0]);
+        } else {
+            yScale = d3.scaleLinear().range([height, 0]);
+            yAxisScale = yScale.copy();
+        }
+    };
+
+    setYScale();
+
     var xAxis = d3.axisBottom().scale(xScale);
-    var yAxis = d3.axisLeft().scale(yScale).ticks(5);
+    var yAxis = d3.axisLeft().scale(yAxisScale).ticks(5);
 
     var xAxisGrid = d3.axisBottom().tickFormat("").scale(xScale)
         .tickSize(-height, 0);
-    var yAxisGrid = d3.axisLeft().tickFormat("").scale(yScale)
+    var yAxisGrid = d3.axisLeft().tickFormat("").scale(yAxisScale)
         .tickSize(-width, 0);
 
     var yScaleBoolean = d3.scaleQuantize().range([height, 0]);
@@ -100,18 +116,29 @@ function D3Evolution(id, options) {
 
         if (opts.type === "area") {
             d3v3LayoutStack(data);
-            yExtents = d3.extent(d3.merge(data), function (d) { return d.y0 + d.y; });
+            yExtents = (opts.yScale === "log")
+                ? d3.extent(d3.merge(data), function (d) { return ((d.y0 + d.y) === 0) ? null : d.y0 + d.y; })
+                : d3.extent(d3.merge(data), function (d) { return d.y0 + d.y; });
         } else {
-            yExtents = d3.extent(d3.merge(data), function (d) { return d.y; });
+            yExtents = (opts.yScale === "log")
+                ? d3.extent(d3.merge(data), function (d) { return (d.y === 0) ? null : d.y; })
+                : d3.extent(d3.merge(data), function (d) { return d.y; });
         }
 
-        yScale.domain([(yExtents[0] > 0) ? 0 : yExtents[0], yExtents[1]]);
+        if (opts.yScale === "log") {
+            yAxisScale.domain([yExtents[0], yExtents[1]]);
+            var y0 = yAxisScale.invert(height);
+            yScale.domain([y0, yExtents[1]]);
+        } else {
+            yScale.domain([(yExtents[0] > 0) ? 0 : yExtents[0], yExtents[1]]);
+            yAxisScale.domain(yAxisScale.domain());
+        }
 
         const t = d3.transition()
             .duration(opts.duration);
 
-        g.select(".y.grid").transition(t).call(yAxisGrid.scale(yScale));
-        g.select(".y.axis").transition(t).call(yAxis.scale(yScale));
+        g.select(".y.grid").transition(t).call(yAxisGrid.scale(yAxisScale));
+        g.select(".y.axis").transition(t).call(yAxis.scale(yAxisScale));
     };
 
     var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
@@ -153,9 +180,22 @@ function D3Evolution(id, options) {
             yAxis.tickFormat(null);
             yAxisLabel.transition().duration(opts.duration).style("opacity", 1);
             data = srcData;
+//                data = $.extend(true, [], srcData)
         }
         stack();
     }
+
+    /**
+     * Substitute real zeroes with values mapped to zero position on the graph.
+     */
+    const substY0 = function () {
+        if (opts.yScale === "log") {
+            const y0 = yScale.invert(height);
+            data.forEach(function (s) {
+                s.forEach(function (d, i) { return d.y == 0 ? d.y : y0; });
+            });
+        }
+    };
 
     var svg = d3.select("#" + id).append("svg")
         .classed('d3evolution', true)
@@ -188,6 +228,13 @@ function D3Evolution(id, options) {
         .attr("class", "y axis")
         .attr("transform", "translate(0,0)")
         .call(yAxis);
+
+    // Zero tick mark for log scale
+    var y0Scale = d3.scaleOrdinal().domain([0]).range([height]);
+    var y0Axis = d3.axisLeft().scale(y0Scale);
+    g.append("g")
+        .attr("class", "y-zero axis")
+        .call(y0Axis);
 
     var yAxisLabel = g.append("text")
         .attr("class", "y label")
@@ -248,6 +295,7 @@ function D3Evolution(id, options) {
             .remove();
 
         yPreprocess();
+        substY0();
 
         var path = g.selectAll("path.path").data(data);
 
@@ -437,6 +485,20 @@ function D3Evolution(id, options) {
                     .transition().duration(opts.duration / 2)
                     .style("opacity", 1);
             });
+
+        return this;
+    };
+
+    this.yScale = function (a) {
+        opts.yScale = a;
+
+        setYScale();
+        substY0();
+        stack();
+
+        g.selectAll("path.path")
+            .transition().duration(opts.duration)
+            .attr("d", (opts.type === "area") ? area : line);
 
         return this;
     };
