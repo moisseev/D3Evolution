@@ -134,6 +134,46 @@ function D3Evolution(id, options) {
             yAxisScale.domain(yAxisScale.domain());
         }
 
+        /**
+         * Hide overlapping tick labels on logarithmic Y-axis.
+         * @param {number} d - Tick value.
+         * @param {object} p - Previous unhidden label.
+         * @param {number} p.y - Y-position of the tick.
+         * @param {string} f - Tick label format.
+         * @returns {string} Tick label format or empty string.
+         */
+        function logFormat(d, p, f) {
+            // Minimal interval of labeled ticks
+            const minInterval = 15;
+            // The nearest power of 10.
+            const pow10 = Math.pow(10, Math.round(Math.log(d) / Math.LN10));
+
+            if (
+                // Never hide labels of power of 10 tick marks
+                !(Math.abs(pow10 - d) < 1e-6) && (
+                    // Hide if the next power of 10 tick mark is too close
+                    (Math.abs(yScale(pow10) - yScale(d)) < minInterval) ||
+                    // Hide if previous label is too close
+                    ((p.y - yScale(d)) < minInterval)
+                )
+            ) {
+                return "";
+            }
+
+            p.y = yScale(d);
+            return f(d);
+        }
+
+        if (opts.convert === "percentage") {
+            var prevUnhidLabel = {y: height}; // Previous unhidden tick label
+            const percentFormat = d3.format(".0%");
+            yAxis.tickFormat((opts.yScale === "log")
+                ? function (d) { return logFormat(d, prevUnhidLabel, percentFormat) ;}
+                : percentFormat);
+        } else {
+            yAxis.tickFormat(null);
+        }
+
         const t = d3.transition()
             .duration(opts.duration);
 
@@ -173,17 +213,15 @@ function D3Evolution(id, options) {
 
     var yPreprocess = function () {
         if (opts.convert === "percentage") {
-            yAxis.tickFormat(d3.format(".0%"));
             yAxisLabel.transition().duration(opts.duration).style("opacity", 0);
             data = convert2Percentage(srcData);
         } else {
-            yAxis.tickFormat(null);
             yAxisLabel.transition().duration(opts.duration).style("opacity", 1);
             data = srcData;
 //                data = $.extend(true, [], srcData)
         }
         stack();
-    }
+    };
 
     /**
      * Substitute real zeroes with values mapped to zero position on the graph.
