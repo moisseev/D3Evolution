@@ -167,10 +167,12 @@ function D3Evolution(id, options) {
         if (opts.convert === "percentage") {
             var prevUnhidLabel = {y: height}; // Previous unhidden tick label
             const percentFormat = d3.format(".0%");
+            y0Axis.tickFormat(percentFormat);
             yAxis.tickFormat((opts.yScale === "log")
                 ? function (d) { return logFormat(d, prevUnhidLabel, percentFormat) ;}
                 : percentFormat);
         } else {
+            y0Axis.tickFormat(null);
             yAxis.tickFormat(null);
         }
 
@@ -179,6 +181,7 @@ function D3Evolution(id, options) {
 
         g.select(".y.grid").transition(t).call(yAxisGrid.scale(yAxisScale));
         g.select(".y.axis").transition(t).call(yAxis.scale(yAxisScale));
+        g.select(".y-zero.axis").call(y0Axis);
     };
 
     var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
