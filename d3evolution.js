@@ -131,7 +131,7 @@ function D3Evolution(id, options) {
             yScale.domain([y0, yExtents[1]]);
         } else {
             yScale.domain([(yExtents[0] > 0) ? 0 : yExtents[0], yExtents[1]]);
-            yAxisScale.domain(yAxisScale.domain());
+            yAxisScale.domain(yScale.domain());
         }
 
         /**
