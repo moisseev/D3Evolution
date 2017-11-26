@@ -176,6 +176,13 @@ function D3Evolution(id, options) {
             yAxis.tickFormat(null);
         }
 
+        /**
+         * In some cases when extent values are to close (e.g. 0.00011 and 0.00019
+         * on log scale), there are no ticks generated. Possible D3 bug.
+         * We should set at least labels for extents if there are no any ticks.
+         */
+        yAxis.tickValues(!yAxisScale.ticks().length ? [yExtents[0], yExtents[1]] : null);
+
         const t = d3.transition()
             .duration(opts.duration);
 
