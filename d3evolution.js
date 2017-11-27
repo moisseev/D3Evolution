@@ -126,6 +126,9 @@ function D3Evolution(id, options) {
         }
 
         if (opts.yScale === "log") {
+            if (yExtents[0] === yExtents[1]) {
+                yExtents[0] *= .9;
+            }
             yAxisScale.domain([yExtents[0], yExtents[1]]);
             var y0 = yAxisScale.invert(height);
             yScale.domain([y0, yExtents[1]]);
