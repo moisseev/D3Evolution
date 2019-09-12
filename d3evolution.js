@@ -307,11 +307,9 @@ function D3Evolution(id, options) {
 
     title.timeRange = title.append("tspan");
 
+    var opacity = [];
     this.data = function (a) {
         srcData = $.extend(true, [], a);
-
-        var opacity = [];
-
         legendX = opts.width - opts.margin.right - opts.legend.space * srcData.length;
 
         // Convert time in seconds to milliseconds
