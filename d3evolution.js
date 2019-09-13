@@ -85,7 +85,7 @@ function D3Evolution(id, options) {
     var yScaleBoolean = d3.scaleQuantize().range([height, 0]);
     var areaNull = d3.area()
         .x(function (d) { return xScale(d.x); })
-        .y0(function (d) { return height; })
+        .y0(function () { return height; })
         .y1(function (d) { return yScaleBoolean(d.y == null); })
         .curve(d3.curveStep);
 
@@ -245,7 +245,7 @@ function D3Evolution(id, options) {
         if (opts.yScale === "log") {
             const y0 = yScale.invert(height);
             data.forEach(function (s) {
-                s.forEach(function (d, i) { return d.y == 0 ? d.y : y0; });
+                s.forEach(function (d) { return d.y == 0 ? d.y : y0; });
             });
         }
     };
