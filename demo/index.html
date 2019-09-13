@@ -9,7 +9,6 @@
     <link rel="stylesheet" type="text/css" href="demo.css" />
 
     <script src="https://d3js.org/d3.v5.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="../d3evolution.js"></script>
 </head>
@@ -148,11 +147,18 @@
         legend[6] = { space: 150 };
 
         function getJSON(uri) {
-            d3.json(uri).then(function(json) {
-                evolution.data(json);
-            }).catch(function(error) {
-                console.warn("d3.json error: " + error);
-            });
+            $.ajax({
+                dataType: "json",
+                // Override the mime type as "text/xml" is implied for a local file
+                mimeType: "application/json",
+                url: uri
+            })
+                .done(function (json) {
+                    evolution.data(json);
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    console.warn(uri + " query " + textStatus + ": " + errorThrown);
+                });
         }
 
         var evolution = new D3Evolution("chart", options);
