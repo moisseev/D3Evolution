@@ -114,7 +114,7 @@
                     {label: "Rejected",      color: "#FF0000"},
                     {label: "Probable spam", color: "#FFD700"},
                     {label: "Greylisted",    color: "#436EEE"},
-                    {label: "Clean",         color: "#66cc00"},
+                    {label: "Clean",         color: "#66cc00"}
                 ]
             }
         };
@@ -128,7 +128,7 @@
                 {label: "[Rejected]",      color: "#FF0000"},
                 {label: "[Probable spam]", color: "#FFD700"},
                 {label: "[Greylisted]",    color: "#436EEE"},
-                {label: "[Clean]",         color: "#66cc00"},
+                {label: "[Clean]",         color: "#66cc00"}
             ]
         };
 
@@ -137,16 +137,16 @@
                 {label: "*Rejected*",      color: "blue"},
                 {label: "*Probable spam*", color: "orange"},
                 {label: "*Greylisted*",    color: "green"},
-                {label: "*Clean*",         color: "purple"},
+                {label: "*Clean*",         color: "purple"}
             ]
         };
 
-        legend[3] = { buttonRadius: 5 };
-        legend[4] = { buttonRadius: 10 };
-        legend[5] = { space: 100 };
-        legend[6] = { space: 150 };
+        legend[3] = {buttonRadius: 5};
+        legend[4] = {buttonRadius: 10};
+        legend[5] = {space: 100};
+        legend[6] = {space: 150};
 
-        function getJSON(uri) {
+        function getJSON (uri) {
             $.ajax({
                 dataType: "json",
                 // Override the mime type as "text/xml" is implied for a local file

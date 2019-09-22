@@ -3,7 +3,7 @@
  * Copyright (c) 2016-2017, Alexander Moisseev, BSD 2-Clause
  */
 
-function D3Evolution(id, options) {
+function D3Evolution (id, options) {
     "use strict";
 
     var opts = $.extend(true, {
@@ -35,19 +35,19 @@ function D3Evolution(id, options) {
     }, options);
 
     const curves = {
-        "curveLinear":          d3.curveLinear,
-        "curveStep":            d3.curveStep,
-        "curveStepBefore":      d3.curveStepBefore,
-        "curveStepAfter":       d3.curveStepAfter,
-        "curveMonotoneX":       d3.curveMonotoneX,
-        "curveBasis":           d3.curveBasis,
-        "curveBasisOpen":       d3.curveBasisOpen,
-        "curveBundle":          d3.curveBundle,
-        "curveCardinal":        d3.curveCardinal,
-        "curveCardinalOpen":    d3.curveCardinalOpen,
-        "curveCatmullRom":      d3.curveCatmullRom,
-        "curveCatmullRomOpen":  d3.curveCatmullRomOpen,
-        "curveNatural":         d3.curveNatural,
+        curveLinear:         d3.curveLinear,
+        curveStep:           d3.curveStep,
+        curveStepBefore:     d3.curveStepBefore,
+        curveStepAfter:      d3.curveStepAfter,
+        curveMonotoneX:      d3.curveMonotoneX,
+        curveBasis:          d3.curveBasis,
+        curveBasisOpen:      d3.curveBasisOpen,
+        curveBundle:         d3.curveBundle,
+        curveCardinal:       d3.curveCardinal,
+        curveCardinalOpen:   d3.curveCardinalOpen,
+        curveCatmullRom:     d3.curveCatmullRom,
+        curveCatmullRomOpen: d3.curveCatmullRomOpen,
+        curveNatural:        d3.curveNatural
     };
 
     var data;
@@ -90,13 +90,13 @@ function D3Evolution(id, options) {
         .curve(d3.curveStep);
 
     var line = d3.line()
-        .defined(function(d) { return d.y != null; })
+        .defined(function (d) { return d.y != null; })
         .x(function (d) { return xScale(d.x); })
         .y(function (d) { return yScale(d.y); })
         .curve(curves[opts.interpolate]);
 
     var area = d3.area()
-        .defined(function(d) { return d.y != null; })
+        .defined(function (d) { return d.y != null; })
         .x(function (d) { return xScale(d.x); })
         .y0(function (d) { return yScale(d.y0); })
         .y1(function (d) { return yScale(d.y0 + d.y); })
@@ -127,9 +127,9 @@ function D3Evolution(id, options) {
 
         if (opts.yScale === "log") {
             if (yExtents[0] === undefined) {
-                yExtents = [.0095, .0105];
+                yExtents = [0.0095, 0.0105];
             } else if (yExtents[0] === yExtents[1]) {
-                yExtents[0] *= .9;
+                yExtents[0] *= 0.9;
             }
             yAxisScale.domain([yExtents[0], yExtents[1]]);
             var y0 = yAxisScale.invert(height);
@@ -147,7 +147,7 @@ function D3Evolution(id, options) {
          * @param {string} f - Tick label format.
          * @returns {string} Tick label format or empty string.
          */
-        function logFormat(d, p, f) {
+        function logFormat (d, p, f) {
             // Minimal interval of labeled ticks
             const minInterval = 15;
             // The nearest power of 10.
@@ -174,7 +174,7 @@ function D3Evolution(id, options) {
             const percentFormat = d3.format(".0%");
             y0Axis.tickFormat(percentFormat);
             yAxis.tickFormat((opts.yScale === "log")
-                ? function (d) { return logFormat(d, prevUnhidLabel, percentFormat) ;}
+                ? function (d) { return logFormat(d, prevUnhidLabel, percentFormat); }
                 : percentFormat);
         } else {
             y0Axis.tickFormat(null);
@@ -200,16 +200,16 @@ function D3Evolution(id, options) {
 
     var pathColor = function (i) {
         return (opts.legend.entries[i] !== undefined &&
-                opts.legend.entries[i].color !== undefined) ?
-            opts.legend.entries[i].color :
-            colorScale(i);
+                opts.legend.entries[i].color !== undefined)
+            ? opts.legend.entries[i].color
+            : colorScale(i);
     };
 
     var pathLabel = function (i) {
         return (opts.legend.entries[i] !== undefined &&
-                opts.legend.entries[i].label !== undefined) ?
-            opts.legend.entries[i].label :
-            "path_" + i;
+                opts.legend.entries[i].label !== undefined)
+            ? opts.legend.entries[i].label
+            : "path_" + i;
     };
 
     var convert2Percentage = function (a) {
@@ -220,11 +220,11 @@ function D3Evolution(id, options) {
         var dataPercentage = $.extend(true, [], a);
 
         dataPercentage.forEach(function (s) {
-            s.forEach(function (d, i) { if (total[i]) {d.y /= total[i];} });
+            s.forEach(function (d, i) { if (total[i]) { d.y /= total[i]; } });
         });
 
         return dataPercentage;
-    }
+    };
 
     var yPreprocess = function () {
         if (opts.convert === "percentage") {
@@ -233,7 +233,6 @@ function D3Evolution(id, options) {
         } else {
             yAxisLabel.transition().duration(opts.duration).style("opacity", 1);
             data = srcData;
-//                data = $.extend(true, [], srcData)
         }
         stack();
     };
@@ -251,7 +250,7 @@ function D3Evolution(id, options) {
     };
 
     var svg = d3.select("#" + id).append("svg")
-        .classed('d3evolution', true)
+        .classed("d3evolution", true)
         .attr("width", opts.width)
         .attr("height", opts.height);
 
@@ -408,8 +407,7 @@ function D3Evolution(id, options) {
                 .attr("r", opts.legend.buttonRadius * (h === false ? 1 : 1.3));
 
             const op = function (i) {
-                if (h === false)
-                    return opacity[i];
+                if (h === false) return opacity[i];
                 return (i === s) ? 1 : (opacity[i] == 0) ? 0 : 0.4;
             };
 
