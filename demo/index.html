@@ -100,71 +100,73 @@
         </div>
     </div>
 
-    <script>
-        "use strict";
+<script>
+(function () {
+    "use strict";
 
-        var options = {
-            title: "Rspamd throughput",
-            width: 1060,
-            height: 370,
-            yAxisLabel: "Message rate, msg/s",
+    var options = {
+        title: "Rspamd throughput",
+        width: 1060,
+        height: 370,
+        yAxisLabel: "Message rate, msg/s",
 
-            legend: {
-                entries: [
-                    {label: "Rejected",      color: "#FF0000"},
-                    {label: "Probable spam", color: "#FFD700"},
-                    {label: "Greylisted",    color: "#436EEE"},
-                    {label: "Clean",         color: "#66cc00"}
-                ]
-            }
-        };
-
-        var legend = [];
-
-        legend[0] = options.legend;
-
-        legend[1] = {
+        legend: {
             entries: [
-                {label: "[Rejected]",      color: "#FF0000"},
-                {label: "[Probable spam]", color: "#FFD700"},
-                {label: "[Greylisted]",    color: "#436EEE"},
-                {label: "[Clean]",         color: "#66cc00"}
+                {label: "Rejected",      color: "#FF0000"},
+                {label: "Probable spam", color: "#FFD700"},
+                {label: "Greylisted",    color: "#436EEE"},
+                {label: "Clean",         color: "#66cc00"}
             ]
-        };
+        }
+    };
 
-        legend[2] = {
-            entries: [
-                {label: "*Rejected*",      color: "blue"},
-                {label: "*Probable spam*", color: "orange"},
-                {label: "*Greylisted*",    color: "green"},
-                {label: "*Clean*",         color: "purple"}
-            ]
-        };
+    var legend = [];
 
-        legend[3] = {buttonRadius: 5};
-        legend[4] = {buttonRadius: 10};
-        legend[5] = {space: 100};
-        legend[6] = {space: 150};
+    legend[0] = options.legend;
 
-        window.evolution = new D3Evolution("chart", options);
-        window.getJSON = function (uri) {
-            $.ajax({
-                dataType: "json",
-                // Override the mime type as "text/xml" is implied for a local file
-                mimeType: "application/json",
-                url: uri
+    legend[1] = {
+        entries: [
+            {label: "[Rejected]",      color: "#FF0000"},
+            {label: "[Probable spam]", color: "#FFD700"},
+            {label: "[Greylisted]",    color: "#436EEE"},
+            {label: "[Clean]",         color: "#66cc00"}
+        ]
+    };
+
+    legend[2] = {
+        entries: [
+            {label: "*Rejected*",      color: "blue"},
+            {label: "*Probable spam*", color: "orange"},
+            {label: "*Greylisted*",    color: "green"},
+            {label: "*Clean*",         color: "purple"}
+        ]
+    };
+
+    legend[3] = {buttonRadius: 5};
+    legend[4] = {buttonRadius: 10};
+    legend[5] = {space: 100};
+    legend[6] = {space: 150};
+
+    window.evolution = new D3Evolution("chart", options);
+    window.getJSON = function (uri) {
+        $.ajax({
+            dataType: "json",
+            // Override the mime type as "text/xml" is implied for a local file
+            mimeType: "application/json",
+            url: uri
+        })
+            .done(function (json) {
+                window.evolution.data(json);
             })
-                .done(function (json) {
-                    window.evolution.data(json);
-                })
-                .fail(function (jqXHR, textStatus, errorThrown) {
-                    console.warn(uri + " query " + textStatus + ": " + errorThrown);
-                });
-        };
-        window.legend = legend;
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                console.warn(uri + " query " + textStatus + ": " + errorThrown);
+            });
+    };
+    window.legend = legend;
 
-        window.getJSON("data/hourly.json");
-    </script>
+    window.getJSON("data/hourly.json");
+}());
+</script>
 
 </body>
 
