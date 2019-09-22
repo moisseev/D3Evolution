@@ -146,7 +146,8 @@
         legend[5] = {space: 100};
         legend[6] = {space: 150};
 
-        function getJSON (uri) {
+        window.evolution = new D3Evolution("chart", options);
+        window.getJSON = function (uri) {
             $.ajax({
                 dataType: "json",
                 // Override the mime type as "text/xml" is implied for a local file
@@ -154,15 +155,15 @@
                 url: uri
             })
                 .done(function (json) {
-                    evolution.data(json);
+                    window.evolution.data(json);
                 })
                 .fail(function (jqXHR, textStatus, errorThrown) {
                     console.warn(uri + " query " + textStatus + ": " + errorThrown);
                 });
-        }
+        };
+        window.legend = legend;
 
-        var evolution = new D3Evolution("chart", options);
-        getJSON("data/hourly.json");
+        window.getJSON("data/hourly.json");
     </script>
 
 </body>
