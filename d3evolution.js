@@ -104,7 +104,7 @@ function D3Evolution (id, options) {
 
     var d3v3LayoutStack = function (arr) {
         arr.reduce(function (res, curr) {
-            curr.map(function (d, i) {
+            curr.forEach(function (d, i) {
                 d.y0 = (res.length ? res[i].y + res[i].y0 : 0);
             });
             return curr;
