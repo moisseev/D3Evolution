@@ -86,17 +86,17 @@ function D3Evolution (id, options) {
     var areaNull = d3.area()
         .x(function (d) { return xScale(d.x); })
         .y0(function () { return height; })
-        .y1(function (d) { return yScaleBoolean(d.y == null); })
+        .y1(function (d) { return yScaleBoolean(d.y === null); })
         .curve(d3.curveStep);
 
     var line = d3.line()
-        .defined(function (d) { return d.y != null; })
+        .defined(function (d) { return d.y !== null; })
         .x(function (d) { return xScale(d.x); })
         .y(function (d) { return yScale(d.y); })
         .curve(curves[opts.interpolate]);
 
     var area = d3.area()
-        .defined(function (d) { return d.y != null; })
+        .defined(function (d) { return d.y !== null; })
         .x(function (d) { return xScale(d.x); })
         .y0(function (d) { return yScale(d.y0); })
         .y1(function (d) { return yScale(d.y0 + d.y); })
@@ -244,7 +244,7 @@ function D3Evolution (id, options) {
         if (opts.yScale === "log") {
             const y0 = yScale.invert(height);
             data.forEach(function (s) {
-                s.forEach(function (d) { return d.y == 0 ? d.y : y0; });
+                s.forEach(function (d) { return d.y === 0 ? d.y : y0; });
             });
         }
     };
@@ -386,7 +386,7 @@ function D3Evolution (id, options) {
         g.select(".x.axis").transition(t).call(xAxis.scale(xScale));
 
         var onClick = function (i) {
-            opacity[i] = (opacity[i] != 0) ? 0 : 1;
+            opacity[i] = (opacity[i] !== 0) ? 0 : 1;
 
             d3.select("#circle_" + i)
                 .transition().duration(opts.duration)
@@ -408,7 +408,7 @@ function D3Evolution (id, options) {
 
             const op = function (i) {
                 if (h === false) return opacity[i];
-                return (i === s) ? 1 : (opacity[i] == 0) ? 0 : 0.4;
+                return (i === s) ? 1 : (opacity[i] === 0) ? 0 : 0.4;
             };
 
             g.selectAll("path.path")
