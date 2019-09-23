@@ -50,17 +50,17 @@ function D3Evolution (id, options) {
         curveNatural:        d3.curveNatural
     };
 
-    var data;
-    var srcData;
-    var legendX;
+    var data = null;
+    var srcData = null;
+    var legendX = null;
 
     var width = opts.width - opts.margin.left - opts.margin.right;
     var height = opts.height - opts.margin.top - opts.margin.bottom;
 
     var xScale = d3.scaleTime().range([0, width]);
 
-    var yScale;
-    var yAxisScale;
+    var yScale = null;
+    var yAxisScale = null;
 
     const setYScale = function () {
         if (opts.yScale === "log") {
@@ -112,7 +112,7 @@ function D3Evolution (id, options) {
     };
 
     var stack = function () {
-        var yExtents;
+        var yExtents = [];
 
         if (opts.type === "area") {
             d3v3LayoutStack(data);
