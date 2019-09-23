@@ -102,8 +102,8 @@ function D3Evolution (id, options) {
         .y1(function (d) { return yScale(d.y0 + d.y); })
         .curve(curves[opts.interpolate]);
 
-    var d3v3LayoutStack = function (data) {
-        data.reduce(function (res, curr) {
+    var d3v3LayoutStack = function (arr) {
+        arr.reduce(function (res, curr) {
             curr.map(function (d, i) {
                 d.y0 = (res.length ? res[i].y + res[i].y0 : 0);
             });
@@ -319,8 +319,8 @@ function D3Evolution (id, options) {
         var xExtents = d3.extent(d3.merge(srcData), function (d) { return d.x; });
         xScale.domain([xExtents[0], xExtents[1]]);
 
-        const iso = function (a) {
-            return d3.timeFormat("%Y-%m-%d %H:%M:%S")(new Date(a));
+        const iso = function (t) {
+            return d3.timeFormat("%Y-%m-%d %H:%M:%S")(new Date(t));
         };
         title.timeRange
             .text("[ " + iso(xExtents[0]) + " / " + iso(xExtents[1]) + " ]");
