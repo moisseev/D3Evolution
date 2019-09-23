@@ -126,7 +126,7 @@ function D3Evolution (id, options) {
         }
 
         if (opts.yScale === "log") {
-            if (yExtents[0] === undefined) {
+            if (typeof yExtents[0] === "undefined") {
                 yExtents = [0.0095, 0.0105];
             } else if (yExtents[0] === yExtents[1]) {
                 yExtents[0] *= 0.9;
@@ -199,15 +199,15 @@ function D3Evolution (id, options) {
     var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
 
     var pathColor = function (i) {
-        return (opts.legend.entries[i] !== undefined &&
-                opts.legend.entries[i].color !== undefined)
+        return (typeof opts.legend.entries[i] !== "undefined" &&
+                typeof opts.legend.entries[i].color !== "undefined")
             ? opts.legend.entries[i].color
             : colorScale(i);
     };
 
     var pathLabel = function (i) {
-        return (opts.legend.entries[i] !== undefined &&
-                opts.legend.entries[i].label !== undefined)
+        return (typeof opts.legend.entries[i] !== "undefined" &&
+                typeof opts.legend.entries[i].label !== "undefined")
             ? opts.legend.entries[i].label
             : "path_" + i;
     };
