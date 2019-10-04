@@ -309,7 +309,7 @@ function D3Evolution (id, options) {
     var opacity = [];
     this.data = function (a) {
         srcData = $.extend(true, [], a);
-        legendX = opts.width - opts.margin.right - opts.legend.space * srcData.length;
+        legendX = opts.width - opts.margin.right - (opts.legend.space * srcData.length);
 
         // Convert time in seconds to milliseconds
         srcData.forEach(function (s) {
@@ -435,7 +435,7 @@ function D3Evolution (id, options) {
 
         legend.selectAll("circle")
             .transition().duration(opts.duration)
-            .attr("cx", function (d, i) { return legendX + opts.legend.space * i; });
+            .attr("cx", function (d, i) { return legendX + (opts.legend.space * i); });
 
         var labels = legend.selectAll("text").data(data);
 
@@ -454,7 +454,7 @@ function D3Evolution (id, options) {
         legend.selectAll("text")
             .transition().duration(opts.duration)
             .attr("x", function (d, i) {
-                return legendX + opts.legend.space * i + 2 * opts.legend.buttonRadius;
+                return legendX + (opts.legend.space * i) + (2 * opts.legend.buttonRadius);
             });
 
         return this;
@@ -465,7 +465,7 @@ function D3Evolution (id, options) {
 
         legend.selectAll("circle")
             .transition().duration(opts.duration)
-            .attr("cx", function (d, i) { return legendX + opts.legend.space * i; })
+            .attr("cx", function (d, i) { return legendX + (opts.legend.space * i); })
             .attr("r", opts.legend.buttonRadius)
             .style("fill",   function (d, i) { return pathColor(i); })
             .style("stroke", function (d, i) { return pathColor(i); });
@@ -474,7 +474,7 @@ function D3Evolution (id, options) {
             .text(function (d, i) { return pathLabel(i); })
             .transition().duration(opts.duration)
             .attr("x", function (d, i) {
-                return legendX + opts.legend.space * i + 2 * opts.legend.buttonRadius;
+                return legendX + (opts.legend.space * i) + (2 * opts.legend.buttonRadius);
             });
 
         g.selectAll("path.path")
