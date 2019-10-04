@@ -186,7 +186,7 @@ function D3Evolution (id, options) {
          * on log scale), there are no ticks generated. Possible D3 bug.
          * We should set at least labels for extents if there are no any ticks.
          */
-        yAxis.tickValues(!yAxisScale.ticks().length ? [yExtents[0], yExtents[1]] : null);
+        yAxis.tickValues(yAxisScale.ticks().length ? null : [yExtents[0], yExtents[1]]);
 
         const t = d3.transition()
             .duration(opts.duration);
@@ -386,7 +386,7 @@ function D3Evolution (id, options) {
         g.select(".x.axis").transition(t).call(xAxis.scale(xScale));
 
         var onClick = function (i) {
-            opacity[i] = (opacity[i] !== 0) ? 0 : 1;
+            opacity[i] = (opacity[i] === 0) ? 1 : 0;
 
             d3.select("#circle_" + i)
                 .transition().duration(opts.duration)
