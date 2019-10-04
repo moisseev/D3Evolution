@@ -408,7 +408,8 @@ function D3Evolution (id, options) {
 
             const op = function (i) {
                 if (h === false) return opacity[i];
-                return (i === s) ? 1 : (opacity[i] === 0) ? 0 : 0.4;
+                if (i === s) return 1;
+                return (opacity[i] === 0) ? 0 : 0.4;
             };
 
             g.selectAll("path.path")
