@@ -3,6 +3,8 @@
  * Copyright (c) 2016-2017, Alexander Moisseev, BSD 2-Clause
  */
 
+/* exported D3Evolution */
+/* eslint-disable-next-line max-statements, no-implicit-globals */
 function D3Evolution (id, options) {
     "use strict";
 

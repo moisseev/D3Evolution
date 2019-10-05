@@ -147,6 +147,7 @@
     legend[5] = {space: 100};
     legend[6] = {space: 150};
 
+    /* global D3Evolution:false */
     window.evolution = new D3Evolution("chart", options);
     window.getJSON = function (uri) {
         $.ajax({
@@ -159,6 +160,7 @@
                 window.evolution.data(json);
             })
             .fail(function (jqXHR, textStatus, errorThrown) {
+                // eslint-disable-next-line no-console
                 console.warn(uri + " query " + textStatus + ": " + errorThrown);
             });
     };
