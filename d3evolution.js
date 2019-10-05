@@ -111,6 +111,105 @@ function D3Evolution (id, options) {
         }, []);
     };
 
+    var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
+
+    var pathColor = function (i) {
+        return (typeof opts.legend.entries[i] !== "undefined" &&
+                typeof opts.legend.entries[i].color !== "undefined")
+            ? opts.legend.entries[i].color
+            : colorScale(i);
+    };
+
+    var pathLabel = function (i) {
+        return (typeof opts.legend.entries[i] !== "undefined" &&
+                typeof opts.legend.entries[i].label !== "undefined")
+            ? opts.legend.entries[i].label
+            : "path_" + i;
+    };
+
+    var convert2Percentage = function (a) {
+        var total = a.reduce(function (res, curr) {
+            return curr.map(function (d, i) { return d.y + (res[i] ? res[i] : 0); });
+        }, []);
+
+        var dataPercentage = $.extend(true, [], a);
+
+        dataPercentage.forEach(function (s) {
+            s.forEach(function (d, i) { if (total[i]) { d.y /= total[i]; } });
+        });
+
+        return dataPercentage;
+    };
+
+    /**
+     * Substitute real zeroes with values mapped to zero position on the graph.
+     */
+    const substY0 = function () {
+        if (opts.yScale === "log") {
+            const y0 = yScale.invert(height);
+            data.forEach(function (s) {
+                s.forEach(function (d) { return d.y === 0 ? d.y : y0; });
+            });
+        }
+    };
+
+    var svg = d3.select("#" + id).append("svg")
+        .classed("d3evolution", true)
+        .attr("width", opts.width)
+        .attr("height", opts.height);
+
+    var legend = svg.append("g").attr("class", "legend");
+
+    var g = svg.append("g")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("transform", "translate(" + opts.margin.left + ", " + opts.margin.top + ")");
+
+    g.append("g")
+        .attr("class", "x grid")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxisGrid);
+
+    g.append("g")
+        .attr("class", "y grid")
+        .attr("transform", "translate(0,0)")
+        .call(yAxisGrid);
+
+    g.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    g.append("g")
+        .attr("class", "y axis")
+        .attr("transform", "translate(0,0)")
+        .call(yAxis);
+
+    // Zero tick mark for log scale
+    var y0Scale = d3.scaleOrdinal().domain([0]).range([height]);
+    var y0Axis = d3.axisLeft().scale(y0Scale);
+    g.append("g")
+        .attr("class", "y-zero axis")
+        .call(y0Axis);
+
+    var yAxisLabel = g.append("text")
+        .attr("class", "y label")
+        .attr("x", 20 - opts.margin.left)
+        .attr("y", -20)
+        .style("opacity", (opts.convert === "percentage") ? 0 : 1)
+        .text(opts.yAxisLabel);
+
+    var title = svg.append("svg:text")
+        .attr("x", (opts.width / 2))
+        .attr("y", (opts.margin.top / 3))
+        .attr("text-anchor", "middle");
+
+    title.append("tspan")
+        .attr("class", "chart-title")
+        .text(opts.title + " ");
+
+    title.timeRange = title.append("tspan");
+
     var stack = function () {
         var yExtents = [];
 
@@ -196,36 +295,6 @@ function D3Evolution (id, options) {
         g.select(".y-zero.axis").call(y0Axis);
     };
 
-    var colorScale = d3.scaleOrdinal(d3.schemeCategory10);
-
-    var pathColor = function (i) {
-        return (typeof opts.legend.entries[i] !== "undefined" &&
-                typeof opts.legend.entries[i].color !== "undefined")
-            ? opts.legend.entries[i].color
-            : colorScale(i);
-    };
-
-    var pathLabel = function (i) {
-        return (typeof opts.legend.entries[i] !== "undefined" &&
-                typeof opts.legend.entries[i].label !== "undefined")
-            ? opts.legend.entries[i].label
-            : "path_" + i;
-    };
-
-    var convert2Percentage = function (a) {
-        var total = a.reduce(function (res, curr) {
-            return curr.map(function (d, i) { return d.y + (res[i] ? res[i] : 0); });
-        }, []);
-
-        var dataPercentage = $.extend(true, [], a);
-
-        dataPercentage.forEach(function (s) {
-            s.forEach(function (d, i) { if (total[i]) { d.y /= total[i]; } });
-        });
-
-        return dataPercentage;
-    };
-
     var yPreprocess = function () {
         if (opts.convert === "percentage") {
             yAxisLabel.transition().duration(opts.duration).style("opacity", 0);
@@ -237,77 +306,40 @@ function D3Evolution (id, options) {
         stack();
     };
 
-    /**
-     * Substitute real zeroes with values mapped to zero position on the graph.
-     */
-    const substY0 = function () {
-        if (opts.yScale === "log") {
-            const y0 = yScale.invert(height);
-            data.forEach(function (s) {
-                s.forEach(function (d) { return d.y === 0 ? d.y : y0; });
-            });
-        }
-    };
-
-    var svg = d3.select("#" + id).append("svg")
-        .classed("d3evolution", true)
-        .attr("width", opts.width)
-        .attr("height", opts.height);
-
-    var legend = svg.append("g").attr("class", "legend");
-
-    var g = svg.append("g")
-        .attr("width", width)
-        .attr("height", height)
-        .attr("transform", "translate(" + opts.margin.left + ", " + opts.margin.top + ")");
-
-    g.append("g")
-        .attr("class", "x grid")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxisGrid);
-
-    g.append("g")
-        .attr("class", "y grid")
-        .attr("transform", "translate(0,0)")
-        .call(yAxisGrid);
-
-    g.append("g")
-        .attr("class", "x axis")
-        .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
-
-    g.append("g")
-        .attr("class", "y axis")
-        .attr("transform", "translate(0,0)")
-        .call(yAxis);
-
-    // Zero tick mark for log scale
-    var y0Scale = d3.scaleOrdinal().domain([0]).range([height]);
-    var y0Axis = d3.axisLeft().scale(y0Scale);
-    g.append("g")
-        .attr("class", "y-zero axis")
-        .call(y0Axis);
-
-    var yAxisLabel = g.append("text")
-        .attr("class", "y label")
-        .attr("x", 20 - opts.margin.left)
-        .attr("y", -20)
-        .style("opacity", (opts.convert === "percentage") ? 0 : 1)
-        .text(opts.yAxisLabel);
-
-    var title = svg.append("svg:text")
-        .attr("x", (opts.width / 2))
-        .attr("y", (opts.margin.top / 3))
-        .attr("text-anchor", "middle");
-
-    title.append("tspan")
-        .attr("class", "chart-title")
-        .text(opts.title + " ");
-
-    title.timeRange = title.append("tspan");
-
     var opacity = [];
     this.data = function (a) {
+        var onClick = function (i) {
+            opacity[i] = (opacity[i] === 0) ? 1 : 0;
+
+            d3.select("#circle_" + i)
+                .transition().duration(opts.duration)
+                .style("fill-opacity", opacity[i] + 0.2);
+
+            d3.select("#path_" + i)
+                .transition().duration(opts.duration)
+                .style("opacity", opacity[i]);
+        };
+
+        /**
+         * Highlight selected path and legend circle.
+         * @param {number} s - Selected path index.
+         * @param {boolean} [h] - If false, restore previous state.
+         */
+        const highlight = function (s, h) {
+            d3.select("#circle_" + s)
+                .attr("r", opts.legend.buttonRadius * (h === false ? 1 : 1.3));
+
+            const op = function (i) {
+                if (h === false) return opacity[i];
+                if (i === s) return 1;
+                return (opacity[i] === 0) ? 0 : 0.4;
+            };
+
+            g.selectAll("path.path")
+                .style("opacity",      function (d, i) { return op(i); })
+                .style("fill-opacity", function (d, i) { return op(i); });
+        };
+
         srcData = $.extend(true, [], a);
         legendX = opts.width - opts.margin.right - (opts.legend.space * srcData.length);
 
@@ -384,38 +416,6 @@ function D3Evolution (id, options) {
 
         g.select(".x.grid").transition(t).call(xAxisGrid.scale(xScale));
         g.select(".x.axis").transition(t).call(xAxis.scale(xScale));
-
-        var onClick = function (i) {
-            opacity[i] = (opacity[i] === 0) ? 1 : 0;
-
-            d3.select("#circle_" + i)
-                .transition().duration(opts.duration)
-                .style("fill-opacity", opacity[i] + 0.2);
-
-            d3.select("#path_" + i)
-                .transition().duration(opts.duration)
-                .style("opacity", opacity[i]);
-        };
-
-        /**
-         * Highlight selected path and legend circle.
-         * @param {number} s - Selected path index.
-         * @param {boolean} [h] - If false, restore previous state.
-         */
-        const highlight = function (s, h) {
-            d3.select("#circle_" + s)
-                .attr("r", opts.legend.buttonRadius * (h === false ? 1 : 1.3));
-
-            const op = function (i) {
-                if (h === false) return opacity[i];
-                if (i === s) return 1;
-                return (opacity[i] === 0) ? 0 : 0.4;
-            };
-
-            g.selectAll("path.path")
-                .style("opacity",      function (d, i) { return op(i); })
-                .style("fill-opacity", function (d, i) { return op(i); });
-        };
 
         var buttons = legend.selectAll("circle").data(data);
 
