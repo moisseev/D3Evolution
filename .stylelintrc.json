@@ -1,0 +1,14 @@
+{
+    "extends": "stylelint-config-standard",
+    "ignoreFiles": [
+        "**/*.min.css",
+        "**/*.min.js"
+    ],
+    "rules": {
+        "color-hex-length": null,
+        "comment-empty-line-before": null,
+        "indentation": 4,
+        "number-leading-zero": null,
+        "rule-empty-line-before": null
+    }
+}
