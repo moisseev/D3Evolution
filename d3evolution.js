@@ -212,6 +212,102 @@ function D3Evolution (id, options) {
 
     title.timeRange = title.append("tspan");
 
+    var cursorTime = svg.append("svg:text")
+        .attr("x", (opts.width - 20))
+        .attr("y", (opts.margin.top / 3))
+        .attr("text-anchor", "end");
+
+    var cursorTimeText = cursorTime.append("tspan")
+        .attr("class", "cursor-time");
+
+    cursorTime.append("svg:title")
+        .text("Current cursor position");
+
+    const iso = function (t) {
+        return d3.timeFormat("%Y-%m-%d %H:%M:%S")(new Date(t));
+    };
+
+    /**
+     * Get column of the 'data' array and update cursor position and legend values.
+     * @param {number} idx - Column index.
+     * @returns {Object[]} Column of the 'data' array.
+     */
+    function getColumnByIndex (idx) {
+        var col = data.map(function (d) { return d[idx]; });
+        var t = col[0].x;
+        cursorTimeText.text(iso(t));
+        legend.selectAll("text.value")
+            .text(function (_, j) {
+                if (col[j].y === null) return null;
+                return d3.format((opts.convert === "percentage") ? ".2~%" : ".6~")(col[j].y);
+            });
+        return col;
+    }
+
+    var cursor    = null;
+    var latestIdx = null;
+
+    function mousemove () {
+        // Returns the closest index that corresponds to the horizontal position of the mouse pointer
+        var bisect = d3.bisector(function (d) { return d.x; }).left;
+
+        // recover coordinate we need
+        var x = xScale.invert(d3.mouse(this)[0]); // eslint-disable-line no-invalid-this
+        var idx = bisect(data[0], x) - 1;
+        var col = getColumnByIndex(idx);
+
+        cursor.selectAll(".x,.cursor circle")
+            .attr("transform", "translate(" + xScale(col[0].x) + ",0)");
+
+        cursor.selectAll(".y")
+            .attr("transform", function (_, i) {
+                var d = col[i];
+                var pointerY = (opts.type === "area") ? yScale(d.y0 + d.y) : yScale(d.y);
+                return "translate(0," + (pointerY || 0) + ")";
+            })
+            .style("display", function (_, i) {
+                return col[i].y ? null : "none";
+            });
+    }
+
+    function mouseout () {
+        cursor.style("display", "none");
+        getColumnByIndex(latestIdx);
+    }
+
+    function mouseover () {
+        cursor.style("display", null);
+    }
+
+    // Create a rectangle on top of the g area: this rectangle recovers mouse position
+    g.append("rect")
+        .style("fill", "none")
+        .style("pointer-events", "all")
+        .attr("width", width)
+        .attr("height", height)
+        .on("mousemove", mousemove)
+        .on("mouseout", mouseout)
+        .on("mouseover", mouseover);
+
+    // Create paths groups as we need to dynamically add paths below cursor group
+    var pathNullG = g.append("g");
+    var pathG = g.append("g");
+
+    cursor = g.append("g")
+        .attr("class", "cursor")
+        .style("pointer-events", "none")
+        .style("display", "none");
+
+    // Append vertical line of the cursor
+    cursor.append("line")
+        .attr("class", "x background")
+        .attr("y1", 0)
+        .attr("y2", height);
+    cursor.append("line")
+        .attr("class", "x foreground")
+        .attr("y1", 0)
+        .attr("y2", height);
+
     var stack = function () {
         var yExtents = [];
 
@@ -305,8 +401,18 @@ function D3Evolution (id, options) {
             yAxisLabel.transition().duration(opts.duration).style("opacity", 1);
             data = srcData;
         }
+        latestIdx = srcData[0].length - 1;
         stack();
     };
+
+    function positionLabels () {
+        legend.selectAll("g")
+            .transition().duration(opts.duration)
+            .attr("transform", function (_, i) {
+                return "translate(" + (legendX + (opts.legend.space * i) + (2 * opts.legend.buttonRadius)) +
+                    "," + (opts.margin.top * 2 / 3) + ")";
+            });
+    }
 
     var opacity = [];
     this.data = function (a) {
@@ -337,7 +443,7 @@ function D3Evolution (id, options) {
                 return (opacity[i] === 0) ? 0 : 0.4;
             };
 
-            g.selectAll("path.path")
+            pathG.selectAll("path.path")
                 .style("opacity",      function (d, i) { return op(i); })
                 .style("fill-opacity", function (d, i) { return op(i); });
         };
@@ -353,23 +459,20 @@ function D3Evolution (id, options) {
         var xExtents = d3.extent(d3.merge(srcData), function (d) { return d.x; });
         xScale.domain([xExtents[0], xExtents[1]]);
 
-        const iso = function (t) {
-            return d3.timeFormat("%Y-%m-%d %H:%M:%S")(new Date(t));
-        };
         title.timeRange
             .text("[ " + iso(xExtents[0]) + " / " + iso(xExtents[1]) + " ]");
 
-        var pathNull = g.selectAll("path.path-null").data(srcData);
+        var pathNull = pathNullG.selectAll("path.path-null").data(srcData);
 
         pathNull.enter()
             .append("path")
             .attr("class", "path-null");
 
-        g.selectAll("path.path-null")
+        pathNullG.selectAll("path.path-null")
             .transition().duration(opts.duration / 2)
             .style("opacity", 0)
             .on("end", function () {
-                g.selectAll("path.path-null")
+                pathNullG.selectAll("path.path-null")
                     .attr("d", areaNull)
                     .transition().duration(opts.duration / 2)
                     .style("opacity", 1);
@@ -381,7 +484,7 @@ function D3Evolution (id, options) {
         yPreprocess();
         substY0();
 
-        var path = g.selectAll("path.path").data(data);
+        var path = pathG.selectAll("path.path").data(data);
 
         path.enter()
             .append("path")
@@ -389,13 +492,14 @@ function D3Evolution (id, options) {
             .attr("class", "path")
             .attr("id", function (d, i) { return "path_" + i; })
             .on("click",     function (d, i) { onClick(i); })
-            .on("mouseover", function (d, i) { highlight(i); })
-            .on("mouseout",  function (d, i) { highlight(i, false); });
+            .on("mousemove", mousemove)
+            .on("mouseover", function (d, i) { highlight(i); mouseover(); })
+            .on("mouseout",  function (d, i) { highlight(i, false); mouseout(); });
 
         path.exit()
             .remove();
 
-        path = g.selectAll("path.path");
+        path = pathG.selectAll("path.path");
 
         if (opts.type === "area") {
             path
@@ -419,6 +523,39 @@ function D3Evolution (id, options) {
         g.select(".x.grid").transition(t).call(xAxisGrid.scale(xScale));
         g.select(".x.axis").transition(t).call(xAxis.scale(xScale));
 
+        // Group cursor elements per path
+        var cursorYG = cursor.selectAll(".y").data(data);
+
+        var cursorYGEnter = cursorYG.enter()
+            .append("g")
+            .attr("class", "y")
+            .style("stroke", function (d, i) { return pathColor(i); });
+
+        // Append circles that travel along the curves of the chart
+        cursorYGEnter
+            .append("circle")
+            .attr("class", "background");
+        cursorYGEnter
+            .append("circle")
+            .attr("class", "foreground");
+        cursorYGEnter.selectAll("circle")
+            .attr("r", 7)
+            .style("fill", "none");
+
+        // Append horizontal lines of the cursor
+        cursorYGEnter
+            .append("line")
+            .attr("class", "background");
+        cursorYGEnter
+            .append("line")
+            .attr("class", "foreground");
+        cursorYGEnter.selectAll("line")
+            .attr("x1", 0)
+            .attr("x2", width);
+
+        cursorYG.exit()
+            .remove();
+
         var buttons = legend.selectAll("circle").data(data);
 
         buttons.enter().append("circle")
@@ -439,24 +576,37 @@ function D3Evolution (id, options) {
             .transition().duration(opts.duration)
             .attr("cx", function (d, i) { return legendX + (opts.legend.space * i); });
 
-        var labels = legend.selectAll("text").data(data);
+        var labels = legend.selectAll("g").data(data);
+        var labelsEnter = labels.enter().append("g");
 
-        labels.enter()
+        labelsEnter
             .append("text")
-            .attr("y", opts.margin.top * 2 / 3)
+            .attr("class", "label")
             .attr("dy", "0.3em")
             .text(function (d, i) { return pathLabel(i); })
             .on("click",     function (d, i) { onClick(i); })
             .on("mouseover", function (d, i) { highlight(i); })
             .on("mouseout",  function (d, i) { highlight(i, false); });
 
+        labelsEnter
+            .append("text")
+            .attr("class", "value")
+            .attr("dy", "20");
+
         labels.exit()
             .remove();
 
-        legend.selectAll("text")
-            .transition().duration(opts.duration)
-            .attr("x", function (d, i) {
-                return legendX + (opts.legend.space * i) + (2 * opts.legend.buttonRadius);
+        positionLabels();
+
+        var values = legend.selectAll("text.value");
+        values
+            .transition("opacity").duration(opts.duration / 2)
+            .style("opacity", 0)
+            .on("end", function () {
+                getColumnByIndex(latestIdx);
+                values
+                    .transition("opacity").duration(opts.duration / 2)
+                    .style("opacity", 1);
             });
 
         return this;
@@ -472,17 +622,18 @@ function D3Evolution (id, options) {
             .style("fill",   function (d, i) { return pathColor(i); })
             .style("stroke", function (d, i) { return pathColor(i); });
 
-        legend.selectAll("text")
-            .text(function (d, i) { return pathLabel(i); })
-            .transition().duration(opts.duration)
-            .attr("x", function (d, i) {
-                return legendX + (opts.legend.space * i) + (2 * opts.legend.buttonRadius);
-            });
+        legend.selectAll("text.label")
+            .text(function (d, i) { return pathLabel(i); });
 
-        g.selectAll("path.path")
+        positionLabels();
+
+        pathG.selectAll("path.path")
             .transition().duration(opts.duration)
             .style("fill",   (opts.type === "area") ? function (d, i) { return pathColor(i); } : "none")
             .style("stroke", (opts.type !== "area") ? function (d, i) { return pathColor(i); } : "none");
+
+        cursor.selectAll(".y")
+            .style("stroke", function (d, i) { return pathColor(i); });
 
         return this;
     };
@@ -491,8 +642,9 @@ function D3Evolution (id, options) {
         opts.convert = a;
 
         yPreprocess();
+        getColumnByIndex(latestIdx);
 
-        g.selectAll("path.path")
+        pathG.selectAll("path.path")
             .data(data)
             .transition().duration(opts.duration)
             .attr("d", (opts.type === "area") ? area : line);
@@ -506,7 +658,7 @@ function D3Evolution (id, options) {
         area.curve(curves[opts.interpolate]);
         line.curve(curves[opts.interpolate]);
 
-        g.selectAll("path.path")
+        pathG.selectAll("path.path")
             .attr("d", (opts.type === "area") ? area : line);
 
         return this;
@@ -517,7 +669,7 @@ function D3Evolution (id, options) {
 
         stack();
 
-        g.selectAll("path.path")
+        pathG.selectAll("path.path")
             .style("stroke", (opts.type !== "area") ? function (d, i) { return pathColor(i); } : "none")
             .style("fill",   (opts.type === "area") ? function (d, i) { return pathColor(i); } : "none")
             .transition().duration(opts.duration)
@@ -548,7 +700,7 @@ function D3Evolution (id, options) {
         substY0();
         stack();
 
-        g.selectAll("path.path")
+        pathG.selectAll("path.path")
             .transition().duration(opts.duration)
             .attr("d", (opts.type === "area") ? area : line);
 
