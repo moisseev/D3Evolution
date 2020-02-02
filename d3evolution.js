@@ -581,7 +581,7 @@ function D3Evolution (id, options) {
 
         labelsEnter
             .append("text")
-            .attr("class", "label")
+            .attr("class", "name")
             .attr("dy", "0.3em")
             .text(function (d, i) { return pathLabel(i); })
             .on("click",     function (d, i) { onClick(i); })
@@ -622,7 +622,7 @@ function D3Evolution (id, options) {
             .style("fill",   function (d, i) { return pathColor(i); })
             .style("stroke", function (d, i) { return pathColor(i); });
 
-        legend.selectAll("text.label")
+        legend.selectAll("text.name")
             .text(function (d, i) { return pathLabel(i); });
 
         positionLabels();
