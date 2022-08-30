@@ -247,12 +247,12 @@ function D3Evolution (id, options) {
     var cursor    = null;
     var latestIdx = null;
 
-    function mousemove () {
+    function mousemove (event) {
         // Returns the closest index that corresponds to the horizontal position of the mouse pointer
         var bisect = d3.bisector(function (d) { return d.x; }).left;
 
         // recover coordinate we need
-        var x = xScale.invert(d3.mouse(this)[0]); // eslint-disable-line no-invalid-this
+        var x = xScale.invert(d3.pointer(event)[0]);
         var idx = bisect(data[0], x) - 1;
         var col = getColumnByIndex(idx);
 
@@ -416,16 +416,19 @@ function D3Evolution (id, options) {
 
     var opacity = [];
     this.data = function (a) {
-        var onClick = function (i) {
-            opacity[i] = (opacity[i] === 0) ? 1 : 0;
+        var attachClickListener = (selection) => {
+            selection.on("click", (event) => {
+                const i = selection.nodes().indexOf(event.currentTarget);
+                opacity[i] = (opacity[i] === 0) ? 1 : 0;
 
-            d3.select("#circle_" + i)
-                .transition().duration(opts.duration)
-                .style("fill-opacity", opacity[i] + 0.2);
+                d3.select("#circle_" + i)
+                    .transition().duration(opts.duration)
+                    .style("fill-opacity", opacity[i] + 0.2);
 
-            d3.select("#path_" + i)
-                .transition().duration(opts.duration)
-                .style("opacity", opacity[i]);
+                d3.select("#path_" + i)
+                    .transition().duration(opts.duration)
+                    .style("opacity", opacity[i]);
+            });
         };
 
         /**
@@ -486,15 +489,15 @@ function D3Evolution (id, options) {
 
         var path = pathG.selectAll("path.path").data(data);
 
-        path.enter()
+        const pathEnter = path.enter()
             .append("path")
             .merge(path)
             .attr("class", "path")
             .attr("id", function (d, i) { return "path_" + i; })
-            .on("click",     function (d, i) { onClick(i); })
             .on("mousemove", mousemove)
-            .on("mouseover", function (d, i) { highlight(i); mouseover(); })
-            .on("mouseout",  function (d, i) { highlight(i, false); mouseout(); });
+            .on("mouseover", function (_, d, i) { highlight(i); mouseover(); })
+            .on("mouseout",  function (_, d, i) { highlight(i, false); mouseout(); });
+        attachClickListener(pathEnter);
 
         path.exit()
             .remove();
@@ -558,16 +561,16 @@ function D3Evolution (id, options) {
 
         var buttons = legend.selectAll("circle").data(data);
 
-        buttons.enter().append("circle")
+        const buttonsEnter = buttons.enter().append("circle")
             .attr("id", function (d, i) { return "circle_" + i; })
             .attr("cy", opts.margin.top * 2 / 3)
             .attr("r", opts.legend.buttonRadius)
             .style("fill",   function (d, i) { return pathColor(i); })
             .style("stroke", function (d, i) { return pathColor(i); })
             .style("fill-opacity", function (d, i) { return opacity[i] + 0.2; })
-            .on("click",     function (d, i) { onClick(i); })
-            .on("mouseover", function (d, i) { highlight(i); })
-            .on("mouseout",  function (d, i) { highlight(i, false); });
+            .on("mouseover", function (_, d, i) { highlight(i); })
+            .on("mouseout",  function (_, d, i) { highlight(i, false); });
+        attachClickListener(buttonsEnter);
 
         buttons.exit()
             .remove();
@@ -579,14 +582,14 @@ function D3Evolution (id, options) {
         var labels = legend.selectAll("g").data(data);
         var labelsEnter = labels.enter().append("g");
 
-        labelsEnter
+        const labelsName = labelsEnter
             .append("text")
             .attr("class", "name")
             .attr("dy", "0.3em")
             .text(function (d, i) { return pathLabel(i); })
-            .on("click",     function (d, i) { onClick(i); })
-            .on("mouseover", function (d, i) { highlight(i); })
-            .on("mouseout",  function (d, i) { highlight(i, false); });
+            .on("mouseover", function (_, d, i) { highlight(i); })
+            .on("mouseout",  function (_, d, i) { highlight(i, false); });
+        attachClickListener(labelsName);
 
         labelsEnter
             .append("text")
