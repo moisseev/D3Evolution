@@ -1,5 +1,5 @@
 /*!
- * D3Evolution 2.0.0 (https://github.com/moisseev/D3Evolution)
+ * D3Evolution 2.0.1 (https://github.com/moisseev/D3Evolution)
  * Copyright (c) 2016-2017, Alexander Moisseev, BSD 2-Clause
  */
 
@@ -35,6 +35,11 @@ function D3Evolution (id, options) {
             ]
         }
     }, options);
+
+    this.destroy = function () {
+        d3.selectAll("#" + id + " svg").remove();
+    };
+    this.destroy();
 
     const curves = {
         curveLinear:         d3.curveLinear,
@@ -708,9 +713,5 @@ function D3Evolution (id, options) {
             .attr("d", (opts.type === "area") ? area : line);
 
         return this;
-    };
-
-    this.destroy = function () {
-        d3.select("svg").remove();
     };
 }
