@@ -4,21 +4,19 @@
         {
             "files": ["**/*.html"],
             "customSyntax": "postcss-html"
-        },
-        {
-            "files": ["**/*.js"],
-            "customSyntax": "@stylelint/postcss-css-in-js"
         }
     ],
     "ignoreFiles": [
         "**/*.min.css",
-        "**/*.min.js"
+        "**/*.js"
     ],
     "rules": {
         "color-hex-length": null,
         "comment-empty-line-before": null,
-        "indentation": 4,
         "number-leading-zero": null,
-        "rule-empty-line-before": null
+        "rule-empty-line-before": null,
+        "value-keyword-case": ["lower", {
+            "ignoreKeywords": ["crispEdges", "geometricPrecision"]
+        }]
     }
 }
