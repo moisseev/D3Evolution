@@ -1,5 +1,5 @@
 /*!
- * D3Evolution 2.0.1 (https://github.com/moisseev/D3Evolution)
+ * D3Evolution 2.0.2 (https://github.com/moisseev/D3Evolution)
  * Copyright (c) 2016-2017, Alexander Moisseev, BSD 2-Clause
  */
 
@@ -258,6 +258,8 @@ function D3Evolution (id, options) {
 
         // recover coordinate we need
         var x = xScale.invert(d3.pointer(event)[0]);
+        // Guard: if there is no data (e.g. all y are null) avoid bisector call
+        if (!data || !data[0] || !data[0].length) return;
         var idx = bisect(data[0], x) - 1;
         var col = getColumnByIndex(idx);
 
