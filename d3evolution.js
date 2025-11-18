@@ -423,9 +423,11 @@ function D3Evolution (id, options) {
 
     var opacity = [];
     this.data = function (a) {
+        var getIndex = (selection, event) => selection.nodes().indexOf(event.currentTarget);
+
         var attachClickListener = (selection) => {
             selection.on("click", (event) => {
-                const i = selection.nodes().indexOf(event.currentTarget);
+                const i = getIndex(selection, event);
                 opacity[i] = (opacity[i] === 0) ? 1 : 0;
 
                 d3.select("#circle_" + i)
@@ -502,8 +504,14 @@ function D3Evolution (id, options) {
             .attr("class", "path")
             .attr("id", function (d, i) { return "path_" + i; })
             .on("mousemove", mousemove)
-            .on("mouseover", function (_, d, i) { highlight(i); mouseover(); })
-            .on("mouseout",  function (_, d, i) { highlight(i, false); mouseout(); });
+            .on("mouseover", (event) => {
+                highlight(getIndex(pathG.selectAll("path.path"), event));
+                mouseover();
+            })
+            .on("mouseout", (event) => {
+                highlight(getIndex(pathG.selectAll("path.path"), event), false);
+                mouseout();
+            });
         attachClickListener(pathEnter);
 
         path.exit()
@@ -575,8 +583,8 @@ function D3Evolution (id, options) {
             .style("fill",   function (d, i) { return pathColor(i); })
             .style("stroke", function (d, i) { return pathColor(i); })
             .style("fill-opacity", function (d, i) { return opacity[i] + 0.2; })
-            .on("mouseover", function (_, d, i) { highlight(i); })
-            .on("mouseout",  function (_, d, i) { highlight(i, false); });
+            .on("mouseover", (event) => highlight(getIndex(legend.selectAll("circle"), event)))
+            .on("mouseout",  (event) => highlight(getIndex(legend.selectAll("circle"), event), false));
         attachClickListener(buttonsEnter);
 
         buttons.exit()
@@ -594,8 +602,8 @@ function D3Evolution (id, options) {
             .attr("class", "name")
             .attr("dy", "0.3em")
             .text(function (d, i) { return pathLabel(i); })
-            .on("mouseover", function (_, d, i) { highlight(i); })
-            .on("mouseout",  function (_, d, i) { highlight(i, false); });
+            .on("mouseover", (event) => highlight(getIndex(labelsEnter, event)))
+            .on("mouseout",  (event) => highlight(getIndex(labelsEnter, event), false));
         attachClickListener(labelsName);
 
         labelsEnter
