@@ -4,7 +4,7 @@
  */
 
 /* exported D3Evolution */
-/* eslint-disable-next-line max-statements, no-implicit-globals */
+/* eslint-disable-next-line max-statements */
 function D3Evolution (id, options) {
     "use strict";
 
@@ -316,18 +316,17 @@ function D3Evolution (id, options) {
         .attr("y2", height);
 
     var stack = function () {
-        var yExtents = [];
-
-        if (opts.type === "area") {
-            d3v3LayoutStack(data);
-            yExtents = (opts.yScale === "log")
-                ? d3.extent(d3.merge(data), function (d) { return ((d.y0 + d.y) === 0) ? null : d.y0 + d.y; })
-                : d3.extent(d3.merge(data), function (d) { return d.y0 + d.y; });
-        } else {
-            yExtents = (opts.yScale === "log")
+        var yExtents = (() => {
+            if (opts.type === "area") {
+                d3v3LayoutStack(data);
+                return (opts.yScale === "log")
+                    ? d3.extent(d3.merge(data), function (d) { return ((d.y0 + d.y) === 0) ? null : d.y0 + d.y; })
+                    : d3.extent(d3.merge(data), function (d) { return d.y0 + d.y; });
+            }
+            return (opts.yScale === "log")
                 ? d3.extent(d3.merge(data), function (d) { return (d.y === 0) ? null : d.y; })
                 : d3.extent(d3.merge(data), function (d) { return d.y; });
-        }
+        })();
 
         if (opts.yScale === "log") {
             if (typeof yExtents[0] === "undefined") {
