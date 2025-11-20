@@ -13,7 +13,6 @@
     "rules": {
         "color-hex-length": null,
         "comment-empty-line-before": null,
-        "number-leading-zero": null,
         "rule-empty-line-before": null,
         "value-keyword-case": ["lower", {
             "ignoreKeywords": ["crispEdges", "geometricPrecision"]
