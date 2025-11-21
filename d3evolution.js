@@ -411,13 +411,15 @@ function D3Evolution (id, options) {
         stack();
     };
 
-    function positionLabels () {
-        legend.selectAll("g")
+    function getLabelTransform (i) {
+        return "translate(" + (legendX + (opts.legend.space * i) + (2 * opts.legend.buttonRadius)) +
+            "," + (opts.margin.top * 2 / 3) + ")";
+    }
+
+    function positionLabels (selection) {
+        (selection || legend.selectAll("g"))
             .transition().duration(opts.duration)
-            .attr("transform", function (_, i) {
-                return "translate(" + (legendX + (opts.legend.space * i) + (2 * opts.legend.buttonRadius)) +
-                    "," + (opts.margin.top * 2 / 3) + ")";
-            });
+            .attr("transform", function (_, i) { return getLabelTransform(i); });
     }
 
     var opacity = [];
@@ -425,13 +427,13 @@ function D3Evolution (id, options) {
         var getIndex = (selection, event) => selection.nodes().indexOf(event.currentTarget);
 
         var attachClickListener = (selection) => {
-            selection.on("click", (event) => {
-                const i = getIndex(selection, event);
+            selection.on("click", (event, d) => {
+                const i = data.indexOf(d);
                 opacity[i] = (opacity[i] === 0) ? 1 : 0;
 
                 d3.select("#circle_" + i)
                     .transition().duration(opts.duration)
-                    .style("fill-opacity", opacity[i] + 0.2);
+                    .style("fill-opacity", (opacity[i] === 0) ? 0.2 : 1);
 
                 d3.select("#path_" + i)
                     .transition().duration(opts.duration)
@@ -461,6 +463,13 @@ function D3Evolution (id, options) {
 
         srcData = $.extend(true, [], a);
         legendX = opts.width - opts.margin.right - (opts.legend.space * srcData.length);
+
+        // Initialize opacity array: preserve existing values, add new entries as visible (1)
+        while (opacity.length < srcData.length) {
+            opacity.push(1);
+        }
+        // Truncate if dataset has fewer series
+        opacity.length = srcData.length;
 
         // Convert time in seconds to milliseconds
         srcData.forEach(function (s) {
@@ -579,9 +588,10 @@ function D3Evolution (id, options) {
             .attr("id", function (d, i) { return "circle_" + i; })
             .attr("cy", opts.margin.top * 2 / 3)
             .attr("r", opts.legend.buttonRadius)
+            .attr("cx", function (d, i) { return legendX + (opts.legend.space * i); })
             .style("fill",   function (d, i) { return pathColor(i); })
             .style("stroke", function (d, i) { return pathColor(i); })
-            .style("fill-opacity", function (d, i) { return opacity[i] + 0.2; })
+            .style("fill-opacity", function (d, i) { return (opacity[i] === 0) ? 0.2 : 1; })
             .on("mouseover", (event) => highlight(getIndex(legend.selectAll("circle"), event)))
             .on("mouseout",  (event) => highlight(getIndex(legend.selectAll("circle"), event), false));
         attachClickListener(buttonsEnter);
@@ -589,20 +599,22 @@ function D3Evolution (id, options) {
         buttons.exit()
             .remove();
 
-        legend.selectAll("circle")
+        buttons
             .transition().duration(opts.duration)
-            .attr("cx", function (d, i) { return legendX + (opts.legend.space * i); });
+            .attr("cx", function (d, i) { return legendX + (opts.legend.space * i); })
+            .style("fill-opacity", function (d, i) { return (opacity[i] === 0) ? 0.2 : 1; });
 
         var labels = legend.selectAll("g").data(data);
-        var labelsEnter = labels.enter().append("g");
+        var labelsEnter = labels.enter().append("g")
+            .attr("transform", function (_, i) { return getLabelTransform(i); });
 
         const labelsName = labelsEnter
             .append("text")
             .attr("class", "name")
             .attr("dy", "0.3em")
             .text(function (d, i) { return pathLabel(i); })
-            .on("mouseover", (event) => highlight(getIndex(labelsEnter, event)))
-            .on("mouseout",  (event) => highlight(getIndex(labelsEnter, event), false));
+            .on("mouseover", (event, d) => highlight(data.indexOf(d)))
+            .on("mouseout",  (event, d) => highlight(data.indexOf(d), false));
         attachClickListener(labelsName);
 
         labelsEnter
@@ -613,7 +625,7 @@ function D3Evolution (id, options) {
         labels.exit()
             .remove();
 
-        positionLabels();
+        positionLabels(labels);
 
         var values = legend.selectAll("text.value");
         values
