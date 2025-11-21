@@ -254,13 +254,13 @@ function D3Evolution (id, options) {
 
     function mousemove (event) {
         // Returns the closest index that corresponds to the horizontal position of the mouse pointer
-        var bisect = d3.bisector(function (d) { return d.x; }).left;
+        var getClosestXIndex = d3.bisector(function (d) { return d.x; }).left;
 
         // recover coordinate we need
         var x = xScale.invert(d3.pointer(event)[0]);
         // Guard: if there is no data (e.g. all y are null) avoid bisector call
         if (!data || !data[0] || !data[0].length) return;
-        var idx = bisect(data[0], x) - 1;
+        var idx = Math.max(0, getClosestXIndex(data[0], x) - 1);
         var col = getColumnByIndex(idx);
 
         cursor.selectAll(".x,.cursor circle")
