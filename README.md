@@ -51,6 +51,16 @@ For direct access to files from the repository:
 
 **Note:** GitHub Raw URLs are not intended for production use as a CDN. Use jsDelivr for better performance and reliability.
 
+## Building
+
+To generate a minified version of the library:
+
+```sh
+npm run build
+```
+
+This creates `d3evolution.min.js` in the project root directory. The minified file is excluded from version control.
+
 ## API
 
 The API functions are accessible like so:
