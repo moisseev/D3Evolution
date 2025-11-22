@@ -37,6 +37,14 @@ function D3Evolution (id, options) {
     }, options);
 
     this.destroy = function () {
+        // Remove all event listeners before removing elements
+        d3.select("#" + id).selectAll("*")
+            .on("click", null)
+            .on("mousemove", null)
+            .on("mouseover", null)
+            .on("mouseout", null);
+
+        // Remove SVG and clean up
         d3.selectAll("#" + id + " svg").remove();
     };
     this.destroy();
