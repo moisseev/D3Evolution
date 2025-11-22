@@ -13,18 +13,43 @@ In your page, include the `D3` and `jQuery` libraries. These can be placed anywh
 
 ## Installing
 
-You can download files or load files directly using [RawGit](https://rawgit.com/).
+You can download files or load files directly from a CDN.
 
-For production usage link a specific tag or commit. For example:
+### Using jsDelivr CDN (Recommended)
+
+**Latest release version:**
 ```html
-<script src="//cdn.rawgit.com/moisseev/D3Evolution/14673e0e85ad656313f76f0071f1dee33b521606/d3evolution.js"></script>
-<link rel="stylesheet" type="text/css" href="//cdn.rawgit.com/moisseev/D3Evolution/14673e0e85ad656313f76f0071f1dee33b521606/d3evolution.css">
+<script src="https://cdn.jsdelivr.net/gh/moisseev/D3Evolution@latest/d3evolution.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moisseev/D3Evolution@latest/d3evolution.css">
 ```
-For development you can also use links to the latest version. Do not use these links in production, excessive traffic will be throttled and blacklisted by RawGit. For example:
+
+**Specific version (recommended for production):**
 ```html
-<script src="//cdn.rawgit.com/moisseev/D3Evolution/master/d3evolution.js"></script>
-<link rel="stylesheet" type="text/css" href="//cdn.rawgit.com/moisseev/D3Evolution/master/d3evolution.css">
+<script src="https://cdn.jsdelivr.net/gh/moisseev/D3Evolution@2.0.3/d3evolution.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moisseev/D3Evolution@2.0.3/d3evolution.css">
 ```
+
+**Specific commit hash:**
+```html
+<script src="https://cdn.jsdelivr.net/gh/moisseev/D3Evolution@c197980/d3evolution.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moisseev/D3Evolution@c197980/d3evolution.css">
+```
+
+**Latest from master branch (for development):**
+```html
+<script src="https://cdn.jsdelivr.net/gh/moisseev/D3Evolution@master/d3evolution.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/moisseev/D3Evolution@master/d3evolution.css">
+```
+
+### Using GitHub Raw URLs (Alternative)
+
+For direct access to files from the repository:
+```html
+<script src="https://raw.githubusercontent.com/moisseev/D3Evolution/master/d3evolution.js"></script>
+<link rel="stylesheet" type="text/css" href="https://raw.githubusercontent.com/moisseev/D3Evolution/master/d3evolution.css">
+```
+
+**Note:** GitHub Raw URLs are not intended for production use as a CDN. Use jsDelivr for better performance and reliability.
 
 ## API
 
