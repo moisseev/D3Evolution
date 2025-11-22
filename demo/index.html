@@ -24,7 +24,7 @@
         <div>
             <form autocomplete="off">
                 Select dataset:
-                <select onchange="getJSON(value)">
+                <select id="dataset-select">
                     <option value="data/hourly.json" selected>Hourly</option>
                     <option value="data/hourly_spike.json">Hourly with a spike</option>
                     <option value="data/daily.json">Daily</option>
@@ -38,25 +38,25 @@
                 </select>
 
                 Select chart type:
-                <select onchange="evolution.type(value);">
+                <select id="chart-type-select">
                     <option value="line" selected>Line</option>
                     <option value="area">Stacked area</option>
                 </select>
 
                 Select Y-scale:
-                <select onchange="evolution.yScale(value);">
+                <select id="y-scale-select">
                     <option value="lin" selected>Lin</option>
                     <option value="log">Log</option>
                 </select>
 
                 Convert data to:
-                <select onchange="evolution.convert(value);">
+                <select id="convert-select">
                     <option value="" selected>--</option>
                     <option value="percentage">percentage</option>
                 </select>
 
                 Select <a title="View Mike Bostock's Block." href="https://bl.ocks.org/mbostock/4342190" target="_blank">interpolation mode</a>:
-                <select onchange="evolution.interpolate(value);">
+                <select id="interpolate-select">
                     <option value="curveLinear" selected>curveLinear</option>
                     <option value="curveStep">curveStep</option>
                     <option value="curveStepBefore">curveStepBefore</option>
@@ -73,7 +73,7 @@
                 </select>
 
                 Select legend:
-                <select onchange="evolution.legend(legend[value]);">
+                <select id="legend-select">
                     <option value="0" selected>Use options</option>
                     <option value="1">Legend 1</option>
                     <option value="2">Legend 2</option>
@@ -84,7 +84,7 @@
                 </select>
 
                 Select label:
-                <select onchange="evolution.yAxisLabel(value);">
+                <select id="label-select">
                     <option value="Message rate, msg/s" selected>Message rate, msg/s</option>
                     <option value="Message rate, msg/min">Message rate, msg/min</option>
                     <option value=""></option>
@@ -94,8 +94,8 @@
 
         <div>
             <form>
-                <input type="button" value="Destroy chart" onclick="evolution.destroy();" />
-                <input type="button" value="Create new chart using default options" onclick="evolution.destroy(); evolution = new D3Evolution('chart');" />
+                <input type="button" id="btn-destroy" value="Destroy chart" />
+                <input type="button" id="btn-recreate" value="Create new chart using default options" />
             </form>
         </div>
     </div>
@@ -167,6 +167,27 @@
     window.legend = legend;
 
     window.getJSON("data/hourly.json");
+
+    const addSelectListener = (id, handler) => {
+        document.getElementById(id).addEventListener("change", (e) => handler(e.target.value));
+    };
+
+    addSelectListener("dataset-select", getJSON);
+    addSelectListener("chart-type-select", (value) => evolution.type(value));
+    addSelectListener("y-scale-select", (value) => evolution.yScale(value));
+    addSelectListener("convert-select", (value) => evolution.convert(value));
+    addSelectListener("interpolate-select", (value) => evolution.interpolate(value));
+    addSelectListener("legend-select", (value) => evolution.legend(legend[value]));
+    addSelectListener("label-select", (value) => evolution.yAxisLabel(value));
+
+    document.getElementById("btn-destroy").addEventListener("click", () => {
+        evolution.destroy();
+    });
+
+    document.getElementById("btn-recreate").addEventListener("click", () => {
+        evolution.destroy();
+        evolution = new D3Evolution("chart");
+    });
 }());
 </script>
 
