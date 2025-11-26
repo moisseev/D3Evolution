@@ -432,8 +432,6 @@ function D3Evolution (id, options) {
 
     var opacity = [];
     this.data = function (a) {
-        var getIndex = (selection, event) => selection.nodes().indexOf(event.currentTarget);
-
         var attachClickListener = (selection) => {
             selection.on("click", (event, d) => {
                 const i = data.indexOf(d);
@@ -520,12 +518,12 @@ function D3Evolution (id, options) {
             .attr("class", "path")
             .attr("id", function (d, i) { return "path_" + i; })
             .on("mousemove", mousemove)
-            .on("mouseover", (event) => {
-                highlight(getIndex(pathG.selectAll("path.path"), event));
+            .on("mouseover", (event, d) => {
+                highlight(data.indexOf(d));
                 mouseover();
             })
-            .on("mouseout", (event) => {
-                highlight(getIndex(pathG.selectAll("path.path"), event), false);
+            .on("mouseout", (event, d) => {
+                highlight(data.indexOf(d), false);
                 mouseout();
             });
         attachClickListener(pathEnter);
@@ -600,8 +598,8 @@ function D3Evolution (id, options) {
             .style("fill",   function (d, i) { return pathColor(i); })
             .style("stroke", function (d, i) { return pathColor(i); })
             .style("fill-opacity", function (d, i) { return (opacity[i] === 0) ? 0.2 : 1; })
-            .on("mouseover", (event) => highlight(getIndex(legend.selectAll("circle"), event)))
-            .on("mouseout",  (event) => highlight(getIndex(legend.selectAll("circle"), event), false));
+            .on("mouseover", (event, d) => highlight(data.indexOf(d)))
+            .on("mouseout",  (event, d) => highlight(data.indexOf(d), false));
         attachClickListener(buttonsEnter);
 
         buttons.exit()
