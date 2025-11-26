@@ -7,6 +7,7 @@ import stylistic from "@stylistic/eslint-plugin";
 export default defineConfig([
     js.configs.all,
     stylistic.configs.all,
+    {ignores: ["**/*.min.js"]},
     {
         languageOptions: {
             globals: {

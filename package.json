@@ -2,9 +2,6 @@
     "scripts": {
         "build": "npx terser d3evolution.js --compress --mangle --comments /^!/ -o d3evolution.min.js"
     },
-    "eslintIgnore": [
-        "**/*.min.js"
-    ],
     "devDependencies": {
         "@stylistic/eslint-plugin": "^5.6.1",
         "eslint": "^9.39.1",
