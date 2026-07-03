@@ -1,5 +1,5 @@
 /*!
- * D3Evolution 2.0.4 (https://github.com/moisseev/D3Evolution)
+ * D3Evolution 2.1.0 (https://github.com/moisseev/D3Evolution)
  * Copyright (c) 2016-2017, Alexander Moisseev, BSD 2-Clause
  */
 
@@ -8,7 +8,28 @@
 function D3Evolution (id, options) {
     "use strict";
 
-    var opts = $.extend(true, {
+    // Recursively merge source into target, deep-cloning nested objects and arrays
+    var deepExtend = function (target, source) {
+        if (source === null || typeof source !== "object") {
+            return target;
+        }
+        Object.keys(source).forEach(function (key) {
+            var value = source[key];
+            var dst = target[key];
+            if (value && typeof value === "object") {
+                if (dst === null || typeof dst !== "object") {
+                    dst = Array.isArray(value) ? [] : {};
+                    target[key] = dst;
+                }
+                deepExtend(dst, value);
+            } else {
+                target[key] = value;
+            }
+        });
+        return target;
+    };
+
+    var opts = deepExtend({
         title: "",
         width: 800,
         height: 400,
@@ -147,7 +168,7 @@ function D3Evolution (id, options) {
             return curr.map(function (d, i) { return d.y + (res[i] ? res[i] : 0); });
         }, []);
 
-        var dataPercentage = $.extend(true, [], a);
+        var dataPercentage = deepExtend([], a);
 
         dataPercentage.forEach(function (s) {
             s.forEach(function (d, i) { if (total[i]) { d.y /= total[i]; } });
@@ -467,7 +488,7 @@ function D3Evolution (id, options) {
                 .style("fill-opacity", function (d, i) { return op(i); });
         };
 
-        srcData = $.extend(true, [], a);
+        srcData = deepExtend([], a);
         legendX = opts.width - opts.margin.right - (opts.legend.space * srcData.length);
 
         // Initialize opacity array: preserve existing values, add new entries as visible (1)
@@ -648,7 +669,7 @@ function D3Evolution (id, options) {
     };
 
     this.legend = function (a) {
-        $.extend(true, opts.legend, a);
+        deepExtend(opts.legend, a);
 
         legend.selectAll("circle")
             .transition().duration(opts.duration)

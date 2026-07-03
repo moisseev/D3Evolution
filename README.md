@@ -5,10 +5,9 @@ Live demo is available at http://moisseev.github.io/D3Evolution/demo/
 
 ## Requirements
 
-In your page, include the `D3` and `jQuery` libraries. These can be placed anywhere:
+In your page, include the `D3` library. It can be placed anywhere:
 ```html
 <script src="https://d3js.org/d3.v7.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
 ```
 
 ## Installing
@@ -172,9 +171,12 @@ Each array is represented as a line on the chart.
 Loading dataset with d3.json:
 ```javascript
 function getJSON(uri) {
-    d3.json(uri, function(error, json) {
-        if (error) return console.warn("d3.json error: " + error);
-        evolution.data(json);
-    });
+    d3.json(uri)
+        .then(function (json) {
+            evolution.data(json);
+        })
+        .catch(function (error) {
+            console.warn("d3.json error: " + error);
+        });
 }
 ```

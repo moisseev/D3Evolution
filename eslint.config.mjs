@@ -12,7 +12,6 @@ export default defineConfig([
         languageOptions: {
             globals: {
                 ...globals.browser,
-                ...globals.jquery,
                 d3: "readonly",
             },
             sourceType: "script",

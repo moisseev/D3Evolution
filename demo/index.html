@@ -9,7 +9,6 @@
     <link rel="stylesheet" type="text/css" href="demo.css" />
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
     <script src="../d3evolution.js"></script>
 </head>
 
@@ -150,18 +149,13 @@
     /* global D3Evolution:false */
     window.evolution = new D3Evolution("chart", options);
     window.getJSON = function (uri) {
-        $.ajax({
-            dataType: "json",
-            // Override the mime type as "text/xml" is implied for a local file
-            mimeType: "application/json",
-            url: uri
-        })
-            .done(function (json) {
+        d3.json(uri)
+            .then(function (json) {
                 window.evolution.data(json);
             })
-            .fail(function (jqXHR, textStatus, errorThrown) {
+            .catch(function (error) {
                 // eslint-disable-next-line no-console
-                console.warn(uri + " query " + textStatus + ": " + errorThrown);
+                console.warn(uri + " query failed: " + error);
             });
     };
     window.legend = legend;
